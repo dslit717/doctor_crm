@@ -1,0 +1,303 @@
+@import './abstracts/variables';
+
+.container {
+  max-width: 1800px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: $spacing-lg $spacing-xl;
+  box-sizing: border-box;
+
+  @media (max-width: $bp-md) {
+    padding: $spacing-md;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $primary;
+
+    @media (max-width: $bp-md) {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: $bp-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.controls {
+  display: flex;
+  gap: $spacing-md;
+
+  @media (max-width: $bp-md) {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-lg;
+  border: 1px solid $gray-300;
+  background: $white;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  svg {
+    flex-shrink: 0;
+    display: block;
+  }
+
+  @media (max-width: $bp-md) {
+    flex: 1;
+    font-size: 0.8125rem;
+    padding: $spacing-sm $spacing-md;
+  }
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-400;
+  }
+
+  &.active {
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+  }
+}
+
+.widgetCard {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow $transition-medium;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.widgetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $gray-200;
+}
+
+.widgetTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $primary;
+  }
+}
+
+
+.widgetRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: $white;
+  border-radius: $radius-sm;
+  color: $gray-700;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  z-index: 10;
+  position: relative;
+  transition: all $transition-fast;
+}
+
+.widgetContent {
+  flex: 1;
+  font-size: 0.875rem;
+  color: $gray-600;
+  line-height: 1.6;
+  overflow: auto;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: $gray-400;
+  
+  svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.widgetPanel {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-xl;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  > h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $primary;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $gray-200;
+  }
+}
+
+.widgetList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: $spacing-md;
+}
+
+.widgetItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border: 1.5px solid $gray-200;
+  background: $white;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  position: relative;
+
+  &:hover:not(.disabled) {
+    border-color: 1px solid #333;
+    background: $gray-50;
+  }
+
+  &:active:not(.disabled) {
+    transform: translateY(0);
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: $gray-50;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.widgetItemIcon {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: $spacing-xs;
+}
+
+.widgetItemName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: $gray-900;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.widgetItemBadge {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $gray-900;
+  color: $white;
+  border-radius: 50%;
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.columnSelector {
+  display: flex;
+  gap: 0;
+  border: 1px solid $gray-300;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $white;
+}
+
+.columnButton {
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+  cursor: pointer;
+  transition: all $transition-fast;
+  border-right: 1px solid $gray-300;
+  min-width: 50px;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &:hover:not(.active) {
+    background: $gray-50;
+  }
+
+  &.active {
+    background: $primary;
+    color: $white;
+  }
+}
+
+@media (max-width: $bp-md) {
+  .container {
+    padding: $spacing-md;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+
+  .widgetList {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+

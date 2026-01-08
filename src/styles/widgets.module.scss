@@ -1,0 +1,683 @@
+@import './abstracts/variables';
+
+// 공통 스타일
+.loadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+  color: $gray-400;
+}
+
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.listItem {
+  padding: $spacing-sm;
+  background: $gray-50;
+  border-radius: $radius-md;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $gray-100;
+  }
+}
+
+.itemTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.itemSubtitle {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+.itemMeta {
+  font-size: 0.75rem;
+  color: $gray-400;
+  margin-top: $spacing-xs;
+}
+
+// MemoWidget
+.memoTitleInput {
+  width: 100%;
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $primary;
+  outline: none;
+  background: $white;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.memoTextarea {
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  padding: $spacing-md;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  color: $primary;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+// TaskPlanWidget
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm;
+  background: $gray-50;
+  border-radius: $radius-md;
+  transition: opacity $transition-fast;
+
+  &.completed {
+    opacity: 0.6;
+  }
+}
+
+.taskCheckbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.taskContent {
+  flex: 1;
+}
+
+.taskName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+
+  &.completed {
+    text-decoration: line-through;
+  }
+}
+
+.taskTime {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+// CalendarWidget
+.calendarDate {
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+  color: $primary;
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm;
+  background: $gray-50;
+  border-radius: $radius-md;
+}
+
+.scheduleTime {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $gray-600;
+  min-width: 40px;
+}
+
+.scheduleDetails {
+  flex: 1;
+}
+
+.schedulePatient {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.scheduleType {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+// NoticeBoardWidget
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.noticeItem {
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+
+  &.important {
+    background: #fff7ed;
+  }
+}
+
+.noticeHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-xs;
+}
+
+.noticeIcon {
+  font-size: 0.75rem;
+}
+
+.noticeTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.noticeDate {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+// PatientHistoryWidget
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.historyItem {
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.historyPatient {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.historyStatus {
+  font-size: 0.75rem;
+  padding: 2px $spacing-sm;
+  border-radius: $radius-sm;
+
+  &.completed {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.ongoing {
+    background: #fff3e0;
+    color: #e65100;
+  }
+}
+
+.historyProcedure {
+  font-size: 0.8125rem;
+  color: $gray-500;
+}
+
+.historyDate {
+  font-size: 0.75rem;
+  color: $gray-400;
+  margin-top: $spacing-xs;
+}
+
+// CallCenterQueueWidget
+.queueHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  background: $gray-100;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.queueLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $gray-600;
+}
+
+.queueCount {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.queueList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.queueItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+
+  &.priority {
+    background: #fff3e0;
+  }
+}
+
+.queueCustomer {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.queueType {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+.queueWait {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+// HospitalTimetableWidget
+.timetableList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm $spacing-md;
+}
+
+.timetableItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+
+  &.closed {
+    background: #fee;
+  }
+}
+
+.timetableDay {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.timetableTime {
+  font-size: 0.875rem;
+  color: $gray-600;
+
+  &.closed {
+    color: #eb5757;
+    font-weight: 600;
+  }
+}
+
+// PatientListWidget
+.patientListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.patientItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+}
+
+.patientInfo {
+  flex: 1;
+}
+
+.patientName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.patientMeta {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+.patientStatus {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: 12px;
+}
+
+// ReservationStatusWidget
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.statCard {
+  padding: $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: $gray-500;
+  margin-top: $spacing-xs;
+}
+
+.divider {
+  border-top: 1px solid $gray-200;
+  padding-top: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $gray-600;
+  margin-bottom: $spacing-sm;
+}
+
+.upcomingItem {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-xs 0;
+  font-size: 0.8125rem;
+}
+
+.upcomingName {
+  color: $primary;
+}
+
+.upcomingType {
+  color: $gray-500;
+}
+
+// SalesDashboardWidget
+.salesList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.salesCard {
+  padding: $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+}
+
+.salesLabel {
+  font-size: 0.75rem;
+  color: $gray-500;
+  margin-bottom: $spacing-xs;
+}
+
+.salesContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.salesAmount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $primary;
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+}
+
+.salesChange {
+  font-size: 0.8125rem;
+  font-weight: 600;
+
+  &.up {
+    color: #00a67e;
+  }
+
+  &.down {
+    color: #eb5757;
+  }
+}
+
+// InventoryDashboardWidget
+.inventoryList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.inventoryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+}
+
+.inventoryName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.inventoryStock {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+// PatientAnalyticsWidget
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.analyticsCard {
+  padding: $spacing-lg;
+  background: $gray-50;
+  border-radius: $radius-md;
+  text-align: center;
+}
+
+.analyticsLabel {
+  font-size: 0.75rem;
+  color: $gray-500;
+  margin-bottom: $spacing-sm;
+}
+
+.analyticsValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $primary;
+}
+
+.analyticsChange {
+  font-size: 0.75rem;
+  color: #00a67e;
+  margin-top: $spacing-xs;
+}
+
+// NotificationCenterWidget
+.notificationList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.notificationItem {
+  display: flex;
+  gap: $spacing-sm $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+}
+
+.notificationIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.notificationContent {
+  flex: 1;
+}
+
+.notificationMessage {
+  font-size: 0.875rem;
+  color: $primary;
+  margin-bottom: $spacing-xs;
+}
+
+.notificationTime {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+// DocumentTemplatesWidget
+.templateList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.templateButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $gray-100;
+  }
+}
+
+.templateInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm $spacing-md;
+}
+
+.templateIcon {
+  font-size: 1.25rem;
+}
+
+.templateName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.templateUsage {
+  font-size: 0.75rem;
+  color: $gray-500;
+}
+
+// BeforeAfterWidget
+.caseList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm $spacing-md;
+}
+
+.caseItem {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: $gray-50;
+  border-radius: $radius-md;
+}
+
+.caseThumbnail {
+  width: 60px;
+  height: 60px;
+  background: $gray-200;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.caseDetails {
+  flex: 1;
+}
+
+.casePatient {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $primary;
+}
+
+.caseProcedure {
+  font-size: 0.75rem;
+  color: $gray-500;
+  margin-top: 2px;
+}
+
+.caseDate {
+  font-size: 0.75rem;
+  color: $gray-400;
+  margin-top: 2px;
+}
+
