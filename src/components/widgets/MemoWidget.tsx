@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { WidgetCard } from './WidgetCard';
 import { api } from '@/lib/api';
 import { debounce } from '@/lib/utils';
@@ -24,8 +24,6 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
           setTitle(result.data.title || '메모');
           setContent(result.data.content || '');
         }
-      } catch (error) {
-        console.error('메모 로드 실패:', error);
       } finally {
         setIsLoading(false);
       }
@@ -33,19 +31,12 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
     loadData();
   }, [widgetId]);
 
-  const saveToDatabase = useCallback(
-    debounce(async (newTitle: string, newContent: string) => {
-      try {
-        const result = await api.widgetData.save(USER_ID, widgetId, {
-          title: newTitle,
-          content: newContent
-        });
-        if (!result.success) {
-          console.error('메모 저장 실패:', result.error);
-        }
-      } catch (error) {
-        console.error('메모 저장 실패:', error);
-      }
+  const saveToDatabase = useMemo(
+    () => debounce(async (newTitle: string, newContent: string) => {
+      await api.widgetData.save(USER_ID, widgetId, {
+        title: newTitle,
+        content: newContent
+      });
     }, 1000),
     [widgetId]
   );
@@ -82,6 +73,8 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
             onChange={handleTitleChange}
             placeholder="제목을 입력하세요"
             className={styles.memoTitleInput}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           />
         ) : (
           title
@@ -95,6 +88,9 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
         onChange={handleContentChange}
         placeholder="메모 내용을 작성하세요..."
         className={styles.memoTextarea}
+        readOnly={!isEditing}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
       />
     </WidgetCard>
   );

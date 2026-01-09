@@ -22,7 +22,7 @@ interface WidgetRendererProps {
 }
 
 export function WidgetRenderer({ type, isEditing, onRemove }: WidgetRendererProps) {
-  if (type === 'progress-notes' || type === 'memo' || type.startsWith('memo-')) {
+  if (type === 'memo' || type.startsWith('memo-')) {
     return <MemoWidget widgetId={type} isEditing={isEditing} onRemove={onRemove} />;
   }
 

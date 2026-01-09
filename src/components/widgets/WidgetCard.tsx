@@ -38,6 +38,4 @@ export function WidgetCard({ title, onRemove, isEditing, children }: WidgetCardP
       </div>
     </div>
   );
-}   
-
-               
+}

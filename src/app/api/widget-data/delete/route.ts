@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
 export async function DELETE(req: NextRequest) {
   try {
@@ -13,6 +13,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    const supabase = getSupabaseServer();
     const { error } = await supabase
       .from('widget_data')
       .delete()

@@ -6,7 +6,6 @@ import { Plus, Check, Edit } from 'lucide-react';
 import { WidgetRenderer } from './WidgetRenderer';
 import { LayoutItem, AVAILABLE_WIDGETS } from '@/lib/types';
 import { api } from '@/lib/api';
-import { debounce } from '@/lib/utils';
 import { GRID_CONFIG } from '@/lib/constants';
 import { getWidgetIcon } from '@/lib/widget-icons';
 import styles from '@/styles/dashboard.module.scss';
@@ -14,19 +13,34 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 interface DashboardGridProps {
-  initialLayout: LayoutItem[];
   userId: string;
-  initialColumns?: 2 | 3 | 4;
 }
 
-export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: DashboardGridProps) {
-  const [layout, setLayout] = useState<LayoutItem[]>(initialLayout);
+export function DashboardGrid({ userId }: DashboardGridProps) {
+  const [layout, setLayout] = useState<LayoutItem[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [showWidgetPanel, setShowWidgetPanel] = useState(false);
-  const [columns, setColumns] = useState<2 | 3 | 4>(initialColumns);
+  const [columns, setColumns] = useState<2 | 3 | 4>(3);
   const [gridWidth, setGridWidth] = useState(1200);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const result = await api.layout.get(userId);
+        
+        if (result.success && result.data) {
+          setLayout(result.data.layout || []);
+          setColumns(result.data.columns as 2 | 3 | 4 || 3);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [userId]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -42,37 +56,12 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  const saveLayoutImmediate = useCallback(async (newLayout: LayoutItem[], cols?: number) => {
-    setIsSaving(true);
-    try {
-      const result = await api.layout.save(
-        userId, 
-        newLayout, 
-        cols !== undefined ? cols : columns
-      );
+  const saveLayoutImmediate = useCallback((newLayout: LayoutItem[], cols: number) => {
+    api.layout.save(userId, newLayout, cols);
+  }, [userId]);
 
-      if (!result.success) {
-        console.error('레이아웃 저장 실패:', result.error);
-      }
-    } catch (error) {
-      console.error('레이아웃 저장 오류:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [userId, columns]);
-
-  const saveLayout = useCallback(
-    debounce(async (newLayout: LayoutItem[], cols?: number) => {
-      await saveLayoutImmediate(newLayout, cols);
-    }, 1000),
-    [saveLayoutImmediate]
-  );
-
-  const onLayoutChange = (newLayout: Layout[]) => {
-    // 모바일에서는 레이아웃 변경을 저장하지 않음 (표시용으로만 사용)
-    if (isMobile) return;
-
-    const updatedLayout: LayoutItem[] = newLayout.map(item => ({
+  const convertToLayoutItems = (newLayout: Layout[]): LayoutItem[] => {
+    return newLayout.map(item => ({
       i: item.i,
       x: item.x,
       y: item.y,
@@ -81,32 +70,27 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
       minW: item.minW,
       minH: item.minH,
     }));
+  };
 
-    setLayout(updatedLayout);
-    
-    if (isEditing) {
-      saveLayout(updatedLayout);
-    }
+  const onLayoutChange = (newLayout: Layout[]) => {
+    if (isMobile) return;
+    setLayout(convertToLayoutItems(newLayout));
   };
 
   const removeWidget = async (widgetId: string) => {
     const newLayout = layout.filter(item => item.i !== widgetId);
     setLayout(newLayout);
-    saveLayoutImmediate(newLayout);
+    saveLayoutImmediate(newLayout, columns);
     
     if (widgetId === 'memo' || widgetId.startsWith('memo-')) {
-      try {
-        const result = await api.widgetData.delete(userId, widgetId);
-        if (!result.success) {
-          console.error('위젯 데이터 삭제 실패:', result.error);
-        }
-      } catch (error) {
-        console.error('위젯 데이터 삭제 실패:', error);
-      }
+      await api.widgetData.delete(userId, widgetId);
     }
   };
 
   const toggleEditMode = () => {
+    if (isEditing) {
+      saveLayoutImmediate(layout, columns);
+    }
     setIsEditing(!isEditing);
   };
 
@@ -147,13 +131,11 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
 
     const newLayout = [...layout, newWidget];
     setLayout(newLayout);
-    saveLayoutImmediate(newLayout); 
+    saveLayoutImmediate(newLayout, columns); 
     setShowWidgetPanel(false);
   };
 
   const changeColumns = (newColumns: 2 | 3 | 4) => {
-    setColumns(newColumns);
-    
     const colWidth = Math.floor(GRID_CONFIG.COLS / newColumns);
     const reorganizedLayout = layout.map((item, index) => ({
       ...item,
@@ -163,6 +145,7 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
       minW: Math.max(2, Math.floor(colWidth * 0.8))
     }));
     
+    setColumns(newColumns);
     setLayout(reorganizedLayout);
     saveLayoutImmediate(reorganizedLayout, newColumns);
   };
@@ -178,6 +161,21 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
     : layout;
 
   const effectiveCols = isMobile ? 12 : GRID_CONFIG.COLS;
+
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '1rem',
+        color: '#737373'
+      }}>
+        로딩 중...
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -271,6 +269,16 @@ export function DashboardGrid({ initialLayout, userId, initialColumns = 3 }: Das
         rowHeight={GRID_CONFIG.ROW_HEIGHT}
         width={gridWidth}
         onLayoutChange={onLayoutChange}
+        onDragStop={(newLayout) => {
+          if (isEditing) {
+            saveLayoutImmediate(convertToLayoutItems(newLayout), columns);
+          }
+        }}
+        onResizeStop={(newLayout) => {
+          if (isEditing) {
+            saveLayoutImmediate(convertToLayoutItems(newLayout), columns);
+          }
+        }}
         isDraggable={isEditing && !isMobile}
         isResizable={isEditing}
         resizeHandles={isMobile ? ['s'] : ['se']}

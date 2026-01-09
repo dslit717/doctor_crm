@@ -32,4 +32,3 @@ export function NoticeBoardWidget({ isEditing, onRemove }: NoticeBoardWidgetProp
     </WidgetCard>
   );
 }
-

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,21 +16,34 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
+    const supabase = getSupabaseServer();
+    
+    const { data: rows, error } = await supabase
       .from('widget_data')
       .select('*')
       .eq('user_id', userId)
       .eq('widget_id', widgetId)
-      .single();
+      .order('updated_at', { ascending: false });
+    
+    const data = rows && rows.length > 0 ? rows[0] : null;
 
     if (error && error.code !== 'PGRST116') {
       throw error;
     }
 
-    return NextResponse.json({
-      success: true,
-      data: data?.data || null
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: data?.data || null
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      }
+    );
   } catch (error) {
     console.error('위젯 데이터 조회 오류:', error);
     return NextResponse.json(
