@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import Sidebar from '@/components/Sidebar';
 import '@/styles/globals.scss';
 
 const pretendard = localFont({
@@ -41,7 +42,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={pretendard.variable}>
-      <body className={pretendard.className}>{children}</body>
+      <body className={pretendard.className}>
+        <Sidebar />
+        <main 
+          className="main-content"
+          style={{
+            marginLeft: '200px',
+            maxWidth: 'calc(100vw - 200px)',
+            width: '100%',
+            boxSizing: 'border-box',
+            overflowX: 'hidden'
+          }}
+        >
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

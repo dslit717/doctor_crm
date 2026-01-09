@@ -1,12 +1,12 @@
 @import './abstracts/variables';
 
 .container {
-  max-width: 1800px;
   width: 100%;
   min-height: 100vh;
-  margin: 0 auto;
-  padding: $spacing-lg $spacing-xl;
+  margin: 0;
+  padding: 15px 20px;
   box-sizing: border-box;
+  background: #F8F9FA;
 
   @media (max-width: $bp-md) {
     padding: $spacing-md;
@@ -15,8 +15,7 @@
 
 .header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: $spacing-xl;
 
   h1 {
@@ -86,17 +85,13 @@
 
 .widgetCard {
   background: $white;
-  border: 1px solid $gray-200;
   border-radius: $radius-md;
   padding: $spacing-lg;
   height: 100%;
   display: flex;
   flex-direction: column;
   transition: box-shadow $transition-medium;
-
-  &:hover {
-    box-shadow: $shadow-md;
-  }
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .widgetHeader {
@@ -168,7 +163,7 @@
   border-radius: $radius-md;
   padding: $spacing-xl;
   margin-bottom: $spacing-xl;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   > h3 {
     font-size: 1.125rem;

@@ -45,15 +45,29 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
   useEffect(() => {
     const updateWidth = () => {
       const isMobileView = window.innerWidth < 768;
-      const padding = isMobileView ? 24 : GRID_CONFIG.CONTAINER_PADDING; 
-      const availableWidth = Math.min(window.innerWidth, GRID_CONFIG.MAX_CONTAINER_WIDTH);
-      setGridWidth(availableWidth - padding);
       setIsMobile(isMobileView);
+      
+      const container = document.querySelector('[class*="dashboard_container"]') as HTMLElement;
+      if (container) {
+        const padding = isMobileView ? 32 : 40;
+        setGridWidth(container.clientWidth - padding);
+      }
     };
     
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    
+    // ResizeObserver로 container 크기 변화 직접 감지
+    const container = document.querySelector('[class*="dashboard_container"]') as HTMLElement;
+    if (container) {
+      const resizeObserver = new ResizeObserver(() => {
+        updateWidth();
+      });
+      resizeObserver.observe(container);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
   }, []);
 
   const saveLayoutImmediate = useCallback((newLayout: LayoutItem[], cols: number) => {
@@ -178,9 +192,8 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
   }
 
   return (
-    <div className={styles.container}>
+    <>
       <div className={styles.header}>
-        <h1>닥터 CRM</h1>
         <div className={styles.controls}>
           {!isMobile && (
             <div className={styles.columnSelector}>
@@ -263,6 +276,7 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
       )}
 
       <GridLayout
+        key={`grid-${gridWidth}`}
         className="layout"
         layout={mobileLayout}
         cols={effectiveCols}
@@ -304,7 +318,7 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
           <p>위젯이 없습니다. 편집 모드에서 위젯을 추가하세요.</p>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

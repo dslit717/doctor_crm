@@ -1,0 +1,918 @@
+@import '../../styles/abstracts/variables';
+
+// 전체 레이아웃
+.reservations-layout-v2 {
+  display: flex;
+  gap: 16px;
+  height: calc(100vh - 32px); 
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+}
+
+// 왼쪽 사이드바
+.sidebar-left {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .calendar-mini {
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1F2937;
+      }
+
+      .month-nav {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        border-radius: 4px;
+        color: #6B7280;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #F3F4F6;
+        }
+      }
+    }
+
+    .calendar-grid {
+      .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        margin-bottom: 4px;
+
+        .weekday {
+          text-align: center;
+          font-size: 0.7rem;
+          font-weight: 600;
+          color: #6B7280;
+          padding: 4px 0;
+        }
+      }
+
+      .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+
+        .day {
+          aspect-ratio: 1;
+          border: none;
+          background: none;
+          cursor: pointer;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #374151;
+          transition: all 0.15s;
+
+          &.other-month {
+            color: #D1D5DB;
+          }
+
+          &.today {
+            background: #3B82F6;
+            color: white;
+            font-weight: 600;
+          }
+
+          &.selected {
+            background: #1F2937;
+            color: white;
+            font-weight: 600;
+          }
+
+          &:hover:not(.selected):not(.today) {
+            background: #F3F4F6;
+          }
+        }
+      }
+    }
+  }
+
+  .daily-schedule {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+    .schedule-header {
+      padding: 15px 20px 5px;
+
+      h4 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .total-count {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #3B82F6;
+        }
+      }
+    }
+
+    .schedule-tabs {
+      display: flex;
+      border-bottom: 1px solid #E5E7EB;
+
+      .tab {
+        flex: 1;
+        padding: 12px 8px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #6B7280;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
+        .count {
+          font-weight: 600;
+          color: #9CA3AF;
+        }
+
+        &:hover {
+          color: #374151;
+          background: #F9FAFB;
+        }
+
+        &.active {
+          color: #3B82F6;
+          border-bottom-color: #3B82F6;
+
+          .count {
+            color: #3B82F6;
+          }
+        }
+      }
+    }
+
+    .schedule-table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      .table-header {
+        display: grid;
+        grid-template-columns: 45px 70px 90px 1fr;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #F9FAFB;
+        border-bottom: 1px solid #E5E7EB;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+
+      .table-body {
+        flex: 1;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #F9FAFB;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #D1D5DB;
+          border-radius: 3px;
+
+          &:hover {
+            background: #9CA3AF;
+          }
+        }
+
+        .table-row {
+          display: grid;
+          grid-template-columns: 45px 70px 90px 1fr;
+          gap: 6px;
+          padding: 8px 12px;
+          border-bottom: 1px solid #F3F4F6;
+          cursor: pointer;
+          transition: background 0.2s;
+
+          &:hover {
+            background: #F9FAFB;
+          }
+
+          .col-time {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #374151;
+          }
+
+          .col-patient {
+            .patient-name {
+              font-size: 0.7rem;
+              font-weight: 600;
+              color: #1F2937;
+            }
+          }
+
+          .col-contact {
+            .patient-name {
+              font-size: 0.7rem;
+              font-weight: 500;
+              color: #1F2937;
+              margin-bottom: 1px;
+            }
+
+            .patient-phone {
+              font-size: 0.65rem;
+              color: #6B7280;
+            }
+          }
+
+          .col-purpose {
+            font-size: 0.7rem;
+            color: #6B7280;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .empty-message {
+          padding: 40px 20px;
+          text-align: center;
+          font-size: 0.875rem;
+          color: #9CA3AF;
+        }
+      }
+    }
+  }
+}
+
+// 예약 페이지 메인 컨텐츠
+.reservations-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px 10px;
+
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      h2 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1F2937;
+      }
+
+      .nav-btn {
+        background: white;
+        border: 1px solid #D1D5DB;
+        border-radius: 6px;
+        padding: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        color: #6B7280;
+
+        &:hover {
+          background: #F9FAFB;
+          border-color: #9CA3AF;
+        }
+      }
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      background: #F3F4F6;
+      padding: 4px;
+      border-radius: 8px;
+
+      .tab {
+        background: transparent;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6B7280;
+        transition: all 0.2s;
+
+        &.active {
+          background: white;
+          color: #1F2937;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        &:hover:not(.active) {
+          color: #374151;
+        }
+      }
+    }
+  }
+
+  // 주간 뷰
+  .week-grid {
+    flex: 1;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #F9FAFB;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 4px;
+
+      &:hover {
+        background: #9CA3AF;
+      }
+    }
+
+    .week-header {
+      background: white;
+      display: grid;
+      grid-template-columns: 80px repeat(7, 1fr);
+      border-bottom: 1px solid #E5E7EB;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+
+      .time-col-header {
+        padding: 16px 12px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+
+      .day-col-header {
+        padding: 16px 12px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+
+    .week-body {
+      .week-row-group {
+        display: flex;
+
+        .time-col-group {
+          width: 80px;
+          padding: 20px 12px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #1F2937;
+          text-align: center;
+          border-right: 1px solid #E5E7EB;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+        }
+
+        .day-cols-wrapper {
+          flex: 1;
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+        }
+
+        .day-col-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding: 12px 8px;
+          border-right: 1px solid #E5E7EB;
+
+          &:last-child {
+            border-right: none;
+          }
+
+          .time-slot-card {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            .slot-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 6px;
+              flex-shrink: 0;
+
+              .slot-time {
+                font-size: 0.75rem;
+                color: #3B82F6;
+                font-weight: 500;
+              }
+
+              .slot-count {
+                font-size: 0.75rem;
+                color: #9CA3AF;
+                font-weight: 500;
+              }
+            }
+
+            .slot-patients {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              overflow-y: auto;
+              flex: 1;
+
+              &::-webkit-scrollbar {
+                width: 4px;
+              }
+
+              &::-webkit-scrollbar-track {
+                background: transparent;
+              }
+
+              &::-webkit-scrollbar-thumb {
+                background: #D1D5DB;
+                border-radius: 2px;
+
+                &:hover {
+                  background: #9CA3AF;
+                }
+              }
+
+              .patient-name-item {
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #121212;
+                padding: 2px 0;
+                cursor: pointer;
+
+                .required-mark {
+                  color: #EF4444;
+                  font-weight: 600;
+                  margin: 0 4px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 일별 뷰
+  .day-grid {
+    flex: 1;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #F9FAFB;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 4px;
+
+      &:hover {
+        background: #9CA3AF;
+      }
+    }
+
+    .day-header {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+
+      .time-col-header {
+        width: 80px;
+        padding: 16px 12px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+
+      .slot-col-header {
+        flex: 1;
+        padding: 16px 20px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+    }
+
+    .day-body {
+      .day-row-group {
+        display: flex;
+
+        .time-col-group {
+          width: 80px;
+          padding: 20px 12px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #1F2937;
+          text-align: center;
+          border-right: 1px solid #E5E7EB;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+        }
+
+        .day-slots-wrapper {
+          flex: 1;
+          display: flex;
+          gap: 12px;
+          padding: 12px 16px;
+
+          .time-slot-card {
+            width: 250px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            .slot-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 6px;
+              flex-shrink: 0;
+
+              .slot-time {
+                font-size: 0.75rem;
+                color: #3B82F6;
+                font-weight: 500;
+              }
+
+              .slot-count {
+                font-size: 0.75rem;
+                color: #9CA3AF;
+                font-weight: 500;
+              }
+            }
+
+            .slot-patients {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              overflow-y: auto;
+              flex: 1;
+
+              &::-webkit-scrollbar {
+                width: 4px;
+              }
+
+              &::-webkit-scrollbar-track {
+                background: transparent;
+              }
+
+              &::-webkit-scrollbar-thumb {
+                background: #D1D5DB;
+                border-radius: 2px;
+
+                &:hover {
+                  background: #9CA3AF;
+                }
+              }
+
+              .patient-name-item {
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #121212;
+                padding: 2px 0;
+                cursor: pointer;
+
+                .required-mark {
+                  color: #EF4444;
+                  font-weight: 600;
+                }
+
+                .category-name {
+                  margin-left: 8px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 모달
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-bottom: 1px solid #E5E7EB;
+
+    h3 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1F2937;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: #6B7280;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #F3F4F6;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 25px;
+
+    .form-section {
+      margin-bottom: 24px;
+
+      .section-title {
+        margin: 0 0 16px 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .form-field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          &.full {
+            grid-column: 1 / -1;
+          }
+
+          label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+          }
+
+          input,
+          select,
+          textarea {
+            padding: 10px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            font-family: inherit;
+
+            &:focus {
+              outline: none;
+              border-color: #3B82F6;
+              box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            &::placeholder {
+              color: #9CA3AF;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+          }
+
+          .radio-group {
+            display: flex;
+            gap: 16px;
+            padding: 10px 0;
+
+            label {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              cursor: pointer;
+
+              input[type="radio"] {
+                width: 16px;
+                height: 16px;
+                margin: 0;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .detail-section {
+      margin-bottom: 24px;
+
+      h4 {
+        margin: 0 0 16px 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6B7280;
+      }
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #F3F4F6;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .label {
+          font-size: 0.875rem;
+          color: #6B7280;
+          min-width: 80px;
+        }
+
+        .value {
+          flex: 1;
+          text-align: right;
+          font-size: 0.875rem;
+          color: #1F2937;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 15px;
+    border-top: 1px solid #E5E7EB;
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 12px;
+      margin-left: auto;
+    }
+
+    .btn-cancel {
+      background: #F3F4F6;
+      color: #374151;
+
+      &:hover {
+        background: #E5E7EB;
+      }
+    }
+
+    .btn-submit {
+      background: #3B82F6;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #EF4444;
+      color: white;
+    }
+  }
+}
+
+// 반응형
+@media (max-width: 1024px) {
+  .reservations-layout-v2 {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar-left {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  .week-grid .week-header,
+  .week-grid .week-body .week-row-group {
+    min-width: 900px;
+  }
+}

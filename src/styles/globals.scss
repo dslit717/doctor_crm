@@ -24,6 +24,11 @@ button {
   font-family: $font-family;
 }
 
+// 메인 콘텐츠 영역 (사이드바 제외)
+.main-content {
+  transition: margin-left 0.3s ease, max-width 0.3s ease;
+}
+
 .react-grid-item > .react-resizable-handle.react-resizable-handle-s {
   bottom: 5px!important;
 }
