@@ -3,11 +3,11 @@ import { getSupabaseServer } from '@/lib/supabase-server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, layout, columns } = await req.json();
+    const { employeeId, layout, columns } = await req.json();
 
-    if (!userId) {
+    if (!employeeId) {
       return NextResponse.json(
-        { success: false, error: 'userId is required' },
+        { success: false, error: 'employeeId is required' },
         { status: 400 }
       );
     }
@@ -15,14 +15,14 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabaseServer();
 
     const { data, error } = await supabase
-      .from('layouts')
+      .from('dashboard_layouts')
       .upsert(
         {
-          user_id: userId,
+          employee_id: employeeId,
           layout_json: layout,
           columns: columns,
         },
-        { onConflict: 'user_id' }
+        { onConflict: 'employee_id' }
       )
       .select()
       .single();

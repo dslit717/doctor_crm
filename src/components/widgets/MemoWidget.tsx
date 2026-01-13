@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { WidgetCard } from './WidgetCard';
 import { api } from '@/lib/api';
 import { debounce } from '@/lib/utils';
-import { USER_ID } from '@/lib/constants';
-import styles from '@/styles/widgets.module.scss';
+import { useAuth } from '@/contexts/AuthContext';
+import styles from './widgets.module.scss';
 
 interface MemoWidgetProps {
   widgetId?: string;
@@ -12,6 +12,9 @@ interface MemoWidgetProps {
 }
 
 export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidgetProps) {
+  const { user } = useAuth();
+  const employeeId = user?.employee?.id || 'default';
+  
   const [title, setTitle] = useState('메모');
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +22,7 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
   useEffect(() => {
     const loadData = async () => {
       try {
-        const result = await api.widgetData.get<{ title: string; content: string }>(USER_ID, widgetId);
+        const result = await api.widgetData.get<{ title: string; content: string }>(employeeId, widgetId);
         if (result.success && result.data) {
           setTitle(result.data.title || '메모');
           setContent(result.data.content || '');
@@ -29,16 +32,16 @@ export function MemoWidget({ widgetId = 'memo', isEditing, onRemove }: MemoWidge
       }
     };
     loadData();
-  }, [widgetId]);
+  }, [employeeId, widgetId]);
 
   const saveToDatabase = useMemo(
     () => debounce(async (newTitle: string, newContent: string) => {
-      await api.widgetData.save(USER_ID, widgetId, {
+      await api.widgetData.save(employeeId, widgetId, {
         title: newTitle,
         content: newContent
       });
     }, 1000),
-    [widgetId]
+    [employeeId, widgetId]
   );
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

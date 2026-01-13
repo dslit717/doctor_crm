@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import styles from '@/styles/dashboard.module.scss';
+import styles from '@/app/(dashboard)/dashboard/dashboard.module.scss';
 
 interface WidgetCardProps {
   title: string | React.ReactNode;

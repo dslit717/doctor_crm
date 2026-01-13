@@ -7,11 +7,11 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.nextUrl.searchParams.get('userId');
+    const employeeId = req.nextUrl.searchParams.get('employeeId');
 
-    if (!userId) {
+    if (!employeeId) {
       return NextResponse.json(
-        { success: false, error: 'userId is required' },
+        { success: false, error: 'employeeId is required' },
         { status: 400 }
       );
     }
@@ -20,9 +20,9 @@ export async function GET(req: NextRequest) {
     
     // 직접 쿼리로 최신 데이터 강제 조회
     const { data: rows, error } = await supabase
-      .from('layouts')
+      .from('dashboard_layouts')
       .select('*')
-      .eq('user_id', userId)
+      .eq('employee_id', employeeId)
       .order('updated_at', { ascending: false });
     
     const data = rows && rows.length > 0 ? rows[0] : null;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { WidgetCard } from './WidgetCard';
-import styles from '@/styles/widgets.module.scss';
+import styles from './widgets.module.scss';
 
 interface PatientHistoryWidgetProps {
   isEditing?: boolean;

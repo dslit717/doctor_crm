@@ -3,11 +3,11 @@ import { getSupabaseServer } from '@/lib/supabase-server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, widgetId, data } = await req.json();
+    const { employeeId, widgetId, data } = await req.json();
 
-    if (!userId || !widgetId || !data) {
+    if (!employeeId || !widgetId || !data) {
       return NextResponse.json(
-        { success: false, error: 'userId, widgetId, and data are required' },
+        { success: false, error: 'employeeId, widgetId, and data are required' },
         { status: 400 }
       );
     }
@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
       .from('widget_data')
       .upsert(
         { 
-          user_id: userId, 
+          employee_id: employeeId, 
           widget_id: widgetId, 
           data: data 
         },
-        { onConflict: 'user_id,widget_id' }
+        { onConflict: 'employee_id,widget_id' }
       )
       .select()
       .single();

@@ -6,12 +6,12 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.nextUrl.searchParams.get('userId');
+    const employeeId = req.nextUrl.searchParams.get('employeeId');
     const widgetId = req.nextUrl.searchParams.get('widgetId');
 
-    if (!userId || !widgetId) {
+    if (!employeeId || !widgetId) {
       return NextResponse.json(
-        { success: false, error: 'userId and widgetId are required' },
+        { success: false, error: 'employeeId and widgetId are required' },
         { status: 400 }
       );
     }
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     const { data: rows, error } = await supabase
       .from('widget_data')
       .select('*')
-      .eq('user_id', userId)
+      .eq('employee_id', employeeId)
       .eq('widget_id', widgetId)
       .order('updated_at', { ascending: false });
     

@@ -1,0 +1,251 @@
+@import '../../../../styles/abstracts/variables';
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: $gray-500;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $gray-200;
+  padding-bottom: 8px;
+}
+
+.tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: $gray-600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: $gray-100;
+  }
+
+  &.active {
+    background: $primary;
+    color: $white;
+  }
+}
+
+.section {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  padding: 24px;
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: $gray-700;
+    margin: 0 0 12px 0;
+
+    &:not(:first-child) {
+      margin-top: 24px;
+    }
+  }
+}
+
+.timeRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    color: $gray-500;
+  }
+
+  input[type="time"] {
+    padding: 8px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+}
+
+.checkboxRow {
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: $gray-700;
+    cursor: pointer;
+
+    input {
+      width: 18px;
+      height: 18px;
+      accent-color: $primary;
+    }
+  }
+}
+
+.saveBtn {
+  margin-top: 24px;
+  padding: 10px 24px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// 휴무일 관리
+.addHoliday {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dateInput {
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.nameInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.holidayList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: $gray-400;
+}
+
+.holidayItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: $gray-50;
+  border-radius: 6px;
+
+  .date {
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-700;
+    min-width: 100px;
+  }
+
+  .name {
+    flex: 1;
+    font-size: 14px;
+    color: $gray-600;
+  }
+
+  .type {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+
+    &.national {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    &.custom {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    &.temporary {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
+  }
+
+  .deleteBtn {
+    padding: 6px;
+    background: none;
+    border: none;
+    color: $gray-400;
+    cursor: pointer;
+    border-radius: 4px;
+
+    &:hover {
+      background: $gray-200;
+      color: #c62828;
+    }
+  }
+}
+

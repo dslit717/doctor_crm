@@ -8,15 +8,15 @@ import { LayoutItem, AVAILABLE_WIDGETS } from '@/lib/types';
 import { api } from '@/lib/api';
 import { GRID_CONFIG } from '@/lib/constants';
 import { getWidgetIcon } from '@/lib/widget-icons';
-import styles from '@/styles/dashboard.module.scss';
+import styles from './dashboard.module.scss';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 interface DashboardGridProps {
-  userId: string;
+  employeeId: string;
 }
 
-export function DashboardGrid({ userId }: DashboardGridProps) {
+export function DashboardGrid({ employeeId }: DashboardGridProps) {
   const [layout, setLayout] = useState<LayoutItem[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showWidgetPanel, setShowWidgetPanel] = useState(false);
@@ -28,7 +28,7 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const result = await api.layout.get(userId);
+        const result = await api.layout.get(employeeId);
         
         if (result.success && result.data) {
           setLayout(result.data.layout || []);
@@ -40,7 +40,7 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
     };
 
     loadData();
-  }, [userId]);
+  }, [employeeId]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -71,8 +71,8 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
   }, []);
 
   const saveLayoutImmediate = useCallback((newLayout: LayoutItem[], cols: number) => {
-    api.layout.save(userId, newLayout, cols);
-  }, [userId]);
+    api.layout.save(employeeId, newLayout, cols);
+  }, [employeeId]);
 
   const convertToLayoutItems = (newLayout: Layout[]): LayoutItem[] => {
     return newLayout.map(item => ({
@@ -97,7 +97,7 @@ export function DashboardGrid({ userId }: DashboardGridProps) {
     saveLayoutImmediate(newLayout, columns);
     
     if (widgetId === 'memo' || widgetId.startsWith('memo-')) {
-      await api.widgetData.delete(userId, widgetId);
+      await api.widgetData.delete(employeeId, widgetId);
     }
   };
 

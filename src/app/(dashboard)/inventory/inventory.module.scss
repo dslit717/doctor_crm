@@ -1,0 +1,215 @@
+@import '../../../styles/abstracts/variables';
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+// 알림 배너
+.alertBanner {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.alertItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+
+  &.warning {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.expiry {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $gray-200;
+  padding-bottom: 8px;
+}
+
+.tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: $gray-600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: $gray-100;
+  }
+
+  &.active {
+    background: $primary;
+    color: $white;
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 250px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.searchBtn {
+  padding: 8px 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: $gray-600;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: $primary;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: $gray-500;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+    font-size: 14px;
+  }
+
+  th {
+    background: $gray-50;
+    font-weight: 600;
+    color: $gray-700;
+  }
+
+  td {
+    color: $gray-600;
+  }
+
+  tbody tr:hover {
+    background: $gray-50;
+  }
+}
+
+.empty {
+  text-align: center !important;
+  padding: 40px !important;
+  color: $gray-400;
+}
+
+.lowStock {
+  background: #fff3e0 !important;
+}
+
+.expiryAlert {
+  background: #ffebee !important;
+}
+
+.warning {
+  color: #ef6c00;
+  font-weight: 600;
+}
+
+.typeBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.in {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.out {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.adjust {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.return {
+    background: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.dispose {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+

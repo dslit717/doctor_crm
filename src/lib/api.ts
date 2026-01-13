@@ -44,34 +44,34 @@ async function request<T>(
 
 export const api = {
   layout: {
-    get: (userId: string) => 
-      request<LayoutResponse>(`/api/layout/get?userId=${userId}&t=${Date.now()}`, {
+    get: (employeeId: string) => 
+      request<LayoutResponse>(`/api/layout/get?employeeId=${employeeId}&t=${Date.now()}`, {
         cache: 'no-store',
       }),
     
-    save: (userId: string, layout: LayoutItem[], columns?: number) =>
+    save: (employeeId: string, layout: LayoutItem[], columns?: number) =>
       request('/api/layout/save', {
         method: 'POST',
         cache: 'no-store',
-        body: JSON.stringify({ userId, layout, columns }),
+        body: JSON.stringify({ employeeId, layout, columns }),
       }),
   },
 
   widgetData: {
-    get: <T = Record<string, unknown>>(userId: string, widgetId: string) =>
-      request<T>(`/api/widget-data/get?userId=${userId}&widgetId=${widgetId}&t=${Date.now()}`, {
+    get: <T = Record<string, unknown>>(employeeId: string, widgetId: string) =>
+      request<T>(`/api/widget-data/get?employeeId=${employeeId}&widgetId=${widgetId}&t=${Date.now()}`, {
         cache: 'no-store',
       }),
     
-    save: <T = Record<string, unknown>>(userId: string, widgetId: string, data: T) =>
+    save: <T = Record<string, unknown>>(employeeId: string, widgetId: string, data: T) =>
       request('/api/widget-data/save', {
         method: 'POST',
         cache: 'no-store',
-        body: JSON.stringify({ userId, widgetId, data }),
+        body: JSON.stringify({ employeeId, widgetId, data }),
       }),
     
-    delete: (userId: string, widgetId: string) =>
-      request(`/api/widget-data/delete?userId=${userId}&widgetId=${widgetId}`, {
+    delete: (employeeId: string, widgetId: string) =>
+      request(`/api/widget-data/delete?employeeId=${employeeId}&widgetId=${widgetId}`, {
         method: 'DELETE',
         cache: 'no-store',
       }),

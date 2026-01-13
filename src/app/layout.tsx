@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import Sidebar from '@/components/Sidebar';
+import { AuthProvider } from '@/contexts/AuthContext';
 import '@/styles/globals.scss';
 
 const pretendard = localFont({
@@ -32,7 +32,7 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   title: 'Doctor CRM',
-  description: '위젯 기반 의사용 CRM 시스템',
+  description: '피부과/성형외과 통합 관리 시스템',
 };
 
 export default function RootLayout({
@@ -43,19 +43,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className={pretendard.className}>
-        <Sidebar />
-        <main 
-          className="main-content"
-          style={{
-            marginLeft: '200px',
-            maxWidth: 'calc(100vw - 200px)',
-            width: '100%',
-            boxSizing: 'border-box',
-            overflowX: 'hidden'
-          }}
-        >
+        <AuthProvider>
           {children}
-        </main>
+        </AuthProvider>
       </body>
     </html>
   );

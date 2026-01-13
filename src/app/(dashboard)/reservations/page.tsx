@@ -14,7 +14,7 @@ import {
 } from '@/lib/utils';
 import { useReservations } from '@/lib/hooks/useReservations';
 import { ReservationModal } from './components/ReservationModal';
-import styles from '@/styles/dashboard.module.scss';
+import styles from '../dashboard/dashboard.module.scss';
 import './reservations.scss';
 
 export default function ReservationsPage() {
