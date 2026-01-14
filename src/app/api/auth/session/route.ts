@@ -3,10 +3,12 @@ import { getSupabaseServer } from '@/lib/supabase-server'
 import { mergePermissions } from '@/lib/auth/permissions'
 import type { RoleWithPermissions, PermissionWithScope } from '@/lib/auth/types'
 
-export async function GET(request: NextRequest) {
+export const dynamic = 'force-dynamic'
+
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const sessionToken = request.cookies.get('session_token')?.value
+    const sessionToken = req.cookies.get('session_token')?.value
 
     if (!sessionToken) {
       return NextResponse.json(

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Plus, Trash2, Save, Bell } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import styles from './operation.module.scss'
@@ -57,14 +57,7 @@ export default function OperationSettingsPage() {
   const [notificationLoading, setNotificationLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    fetchData()
-    if (activeTab === 'notifications') {
-      fetchNotificationData()
-    }
-  }, [activeTab])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       // 운영 시간 조회
@@ -86,7 +79,7 @@ export default function OperationSettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const saveBusinessHours = async () => {
     try {
@@ -141,7 +134,7 @@ export default function OperationSettingsPage() {
     }
   }
 
-  const fetchNotificationData = async () => {
+  const fetchNotificationData = useCallback(async () => {
     setNotificationLoading(true)
     try {
       const [settingsRes, templatesRes] = await Promise.all([
@@ -172,7 +165,14 @@ export default function OperationSettingsPage() {
     } finally {
       setNotificationLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchData()
+    if (activeTab === 'notifications') {
+      fetchNotificationData()
+    }
+  }, [activeTab, fetchData, fetchNotificationData])
 
   const updateNotificationSetting = (category: string, field: string, value: unknown) => {
     setNotificationSettings(prev => {

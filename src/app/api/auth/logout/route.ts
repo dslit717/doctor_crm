@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
-export async function POST(request: NextRequest) {
+export const dynamic = 'force-dynamic'
+
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const sessionToken = request.cookies.get('session_token')?.value
+    const sessionToken = req.cookies.get('session_token')?.value
 
     if (sessionToken) {
       // 세션 비활성화
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (session) {
-        const forwardedFor = request.headers.get('x-forwarded-for')
+        const forwardedFor = req.headers.get('x-forwarded-for')
         const ipAddress = forwardedFor?.split(',')[0].trim() || '127.0.0.1'
 
         await supabase.from('audit_logs').insert({
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
           action_category: 'auth',
           action_detail: 'User logged out',
           ip_address: ipAddress,
-          user_agent: request.headers.get('user-agent'),
+          user_agent: req.headers.get('user-agent'),
         })
       }
     }

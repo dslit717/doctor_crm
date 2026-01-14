@@ -22,12 +22,19 @@ export async function GET(req: NextRequest) {
     }
 
     // category 필드가 있으면 정렬, 없으면 그대로 반환
+    interface NotificationSetting {
+      category?: string
+      [key: string]: unknown
+    }
+    
     const sortedData = data && data.length > 0 && 'category' in data[0]
-      ? [...(data || [])].sort((a: any, b: any) => (a.category || '').localeCompare(b.category || ''))
+      ? [...(data || [])].sort((a: NotificationSetting, b: NotificationSetting) => 
+          (a.category || '').localeCompare(b.category || ''))
       : data || []
 
     return NextResponse.json({ success: true, data: sortedData })
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '알림 설정 조회 중 오류가 발생했습니다.'
     console.error('알림 설정 조회 오류:', error)
     // 에러가 발생해도 빈 배열 반환하여 UI가 깨지지 않도록 함
     return NextResponse.json({ 

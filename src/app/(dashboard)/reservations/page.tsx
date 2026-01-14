@@ -76,7 +76,7 @@ export default function ReservationsPage() {
   };
 
   const getReservationsForSlot = (date: string, time: string) => {
-    return reservations.filter(r => r.date === date && r.time === time);
+    return Array.isArray(reservations) ? reservations.filter(r => r.date === date && r.time === time) : [];
   };
 
   const handleSlotClick = (date: Date, time: string) => {
@@ -195,7 +195,7 @@ export default function ReservationsPage() {
           <div className="schedule-header">
             <h4>
               {String(selectedDate.getFullYear()).slice(-2)}-{String(selectedDate.getMonth() + 1).padStart(2, '0')}-{String(selectedDate.getDate()).padStart(2, '0')} 예약현황 
-              <span className="total-count">{reservations.filter(r => r.date === formatDateForDB(selectedDate)).length}</span>
+              <span className="total-count">{(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate)).length}</span>
             </h4>
           </div>
           
@@ -204,25 +204,25 @@ export default function ReservationsPage() {
               className={`tab ${filterTab === 'reservation' ? 'active' : ''}`}
               onClick={() => setFilterTab('reservation')}
             >
-              예약 <span className="count">{reservations.filter(r => r.date === formatDateForDB(selectedDate) && (r.status || 'reservation') === 'reservation').length}</span>
+              예약 <span className="count">{(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate) && (r.status || 'reservation') === 'reservation').length}</span>
             </button>
             <button 
               className={`tab ${filterTab === 'checkin' ? 'active' : ''}`}
               onClick={() => setFilterTab('checkin')}
             >
-              접수 <span className="count">{reservations.filter(r => r.date === formatDateForDB(selectedDate) && r.status === 'checkin').length}</span>
+              접수 <span className="count">{(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate) && r.status === 'checkin').length}</span>
             </button>
             <button 
               className={`tab ${filterTab === 'cancelled' ? 'active' : ''}`}
               onClick={() => setFilterTab('cancelled')}
             >
-              예약취소 <span className="count">{reservations.filter(r => r.date === formatDateForDB(selectedDate) && r.status === 'cancelled').length}</span>
+              예약취소 <span className="count">{(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate) && r.status === 'cancelled').length}</span>
             </button>
             <button 
               className={`tab ${filterTab === 'all' ? 'active' : ''}`}
               onClick={() => setFilterTab('all')}
             >
-              전체 <span className="count">{reservations.filter(r => r.date === formatDateForDB(selectedDate)).length}</span>
+              전체 <span className="count">{(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate)).length}</span>
             </button>
           </div>
 
@@ -267,7 +267,7 @@ export default function ReservationsPage() {
                     </div>
                   );
                 })}
-              {reservations.filter(r => r.date === formatDateForDB(selectedDate)).length === 0 && (
+              {(Array.isArray(reservations) ? reservations : []).filter(r => r.date === formatDateForDB(selectedDate)).length === 0 && (
                 <div className="empty-message">예약이 없습니다</div>
               )}
             </div>
@@ -332,7 +332,7 @@ export default function ReservationsPage() {
                             {/* 15분 단위 슬롯 2개 */}
                             {[0, 15].map(offset => {
                               const slotTime = `${String(hour).padStart(2, '0')}:${String(minute + offset).padStart(2, '0')}`;
-                              const slotReservations = reservations.filter(r => {
+                              const slotReservations = (Array.isArray(reservations) ? reservations : []).filter(r => {
                                 return r.date === dateStr && r.time === slotTime;
                               });
                               

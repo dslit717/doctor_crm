@@ -23,8 +23,12 @@ export function useReservations(): UseReservationsReturn {
       const response = await fetch('/api/reservations?all=true');
       
       if (response.ok) {
-        const data = await response.json();
-        setReservations(data);
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+          setReservations(result.data);
+        } else {
+          setReservations([]);
+        }
       } else {
         setReservations([]);
       }

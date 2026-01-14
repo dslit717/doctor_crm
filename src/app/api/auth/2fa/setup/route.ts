@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 import { generateTotpSecret, generateQrCode } from '@/lib/auth/two-factor'
 
+export const dynamic = 'force-dynamic'
+
 // 2FA 설정 시작 (QR 코드 생성)
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const { employeeId, method } = await request.json()
+    const { employeeId, method } = await req.json()
 
     if (!employeeId || !method) {
       return NextResponse.json(
@@ -108,10 +110,10 @@ export async function POST(request: NextRequest) {
 }
 
 // 2FA 설정 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const employeeId = searchParams.get('employeeId')
 
     if (!employeeId) {

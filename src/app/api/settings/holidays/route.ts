@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 휴무일 목록 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const year = searchParams.get('year')
 
     let query = supabase
@@ -30,10 +32,10 @@ export async function GET(request: NextRequest) {
 }
 
 // 휴무일 등록
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { date, name, type } = body
 
     const { data, error } = await supabase
@@ -52,10 +54,10 @@ export async function POST(request: NextRequest) {
 }
 
 // 휴무일 삭제
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const id = searchParams.get('id')
 
     if (!id) {

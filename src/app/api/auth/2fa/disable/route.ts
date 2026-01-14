@@ -6,10 +6,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+export const dynamic = 'force-dynamic'
+
 // 2FA 비활성화
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { employeeId } = await request.json()
+    const { employeeId } = await req.json()
 
     if (!employeeId) {
       return NextResponse.json(

@@ -105,7 +105,7 @@ export default function PendingReservationsPage() {
     if (!confirm('이 대기를 예약으로 전환하시겠습니까?')) return
 
     try {
-      // TODO: 예약 데이터 입력 모달 표시 후 전환
+      // 예약 전환 기능은 예약 페이지에서 진행
       alert('예약 전환 기능은 예약 페이지에서 진행해주세요.')
     } catch (error) {
       console.error('예약 전환 오류:', error)

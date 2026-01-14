@@ -7,10 +7,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+export const dynamic = 'force-dynamic'
+
 // SMS 인증 코드 발송
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { employeeId, method } = await request.json()
+    const { employeeId, method } = await req.json()
 
     if (!employeeId) {
       return NextResponse.json(

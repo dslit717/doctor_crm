@@ -8,16 +8,18 @@ import {
 } from '@/lib/auth/session'
 import { verifyTotpCode, generateSmsCode, getSmsCodeExpiry, sendSmsCode } from '@/lib/auth/two-factor'
 
-export async function POST(request: NextRequest) {
+export const dynamic = 'force-dynamic'
+
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { email, password, otpCode, twoFactorMethod: requestedMethod } = body
 
     // 1. IP 주소 확인
-    const forwardedFor = request.headers.get('x-forwarded-for')
+    const forwardedFor = req.headers.get('x-forwarded-for')
     const ipAddress = forwardedFor?.split(',')[0].trim() || '127.0.0.1'
-    const userAgent = request.headers.get('user-agent') || ''
+    const userAgent = req.headers.get('user-agent') || ''
 
     // 2. IP 화이트리스트 조회
     const { data: whitelistData } = await supabase

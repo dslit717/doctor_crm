@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 로그인 이력 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     
     // 필터 파라미터
     const employeeId = searchParams.get('employeeId')
@@ -77,10 +79,10 @@ export async function GET(request: NextRequest) {
 }
 
 // 로그인 통계 조회
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { type, startDate, endDate } = body
 
     if (type === 'failed_attempts') {

@@ -7,10 +7,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+export const dynamic = 'force-dynamic'
+
 // TOTP 설정 검증 (최초 설정 시 코드 확인)
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { employeeId, code } = await request.json()
+    const { employeeId, code } = await req.json()
 
     if (!employeeId || !code) {
       return NextResponse.json(

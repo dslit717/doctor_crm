@@ -3,9 +3,31 @@ import { getSupabaseServer } from '@/lib/supabase-server'
 
 export const dynamic = 'force-dynamic'
 
+interface ServiceData {
+  id?: string
+  selling_price?: number | null
+  base_price?: number | null
+  extended_data?: Record<string, unknown> | null
+  [key: string]: unknown
+}
+
+interface ServiceInsertData {
+  service_code?: string
+  name?: string
+  category?: string
+  selling_price?: number | null
+  tax_type?: string
+  duration_minutes?: number | null
+  description?: string | null
+  is_active?: boolean
+  sort_order?: number
+  extended_data?: Record<string, unknown>
+  [key: string]: unknown
+}
+
 // 서비스 데이터 변환 헬퍼 함수
-function transformServiceData(data: any[] | null) {
-  return data?.map((item: any) => ({
+function transformServiceData(data: ServiceData[] | null) {
+  return data?.map((item: ServiceData) => ({
     ...item,
     price: item.selling_price || item.base_price || 0,
     custom_data: item.extended_data || {}
@@ -13,7 +35,10 @@ function transformServiceData(data: any[] | null) {
 }
 
 // extended_data 컬럼이 없을 때 재시도하는 헬퍼 함수 (insert용)
-async function handleInsertWithExtendedData(supabase: any, insertData: any) {
+async function handleInsertWithExtendedData(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  insertData: ServiceInsertData
+) {
   let result = await supabase.from('services').insert(insertData).select().single()
   
   if (result.error && result.error.message?.includes('extended_data')) {
@@ -26,7 +51,11 @@ async function handleInsertWithExtendedData(supabase: any, insertData: any) {
 }
 
 // extended_data 컬럼이 없을 때 재시도하는 헬퍼 함수 (update용)
-async function handleUpdateWithExtendedData(supabase: any, updateData: any, id: string) {
+async function handleUpdateWithExtendedData(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  updateData: ServiceInsertData,
+  id: string
+) {
   let result = await supabase.from('services').update(updateData).eq('id', id).select().single()
   
   if (result.error && result.error.message?.includes('extended_data')) {
@@ -92,7 +121,7 @@ export async function POST(req: NextRequest) {
     const { custom_data, price, ...restData } = body
     
     // 실제 DB 스키마에 맞게 필드 매핑
-    const insertData: any = {
+    const insertData: ServiceInsertData = {
       service_code: restData.service_code,
       name: restData.name,
       category: restData.category,
@@ -117,10 +146,11 @@ export async function POST(req: NextRequest) {
       success: true, 
       data: transformServiceData([result.data])[0]
     })
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '서비스 등록에 실패했습니다.'
     console.error('서비스 등록 오류:', error)
     return NextResponse.json(
-      { success: false, error: error.message || '서비스 등록에 실패했습니다.' },
+      { success: false, error: errorMessage },
       { status: 500 }
     )
   }
@@ -141,7 +171,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // 실제 DB 스키마에 맞게 필드 매핑
-    const updateData: any = {
+    const updateData: ServiceInsertData = {
       service_code: restData.service_code,
       name: restData.name,
       category: restData.category,
@@ -166,10 +196,11 @@ export async function PUT(req: NextRequest) {
       success: true, 
       data: transformServiceData([result.data])[0]
     })
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '서비스 수정에 실패했습니다.'
     console.error('서비스 수정 오류:', error)
     return NextResponse.json(
-      { success: false, error: error.message || '서비스 수정에 실패했습니다.' },
+      { success: false, error: errorMessage },
       { status: 500 }
     )
   }

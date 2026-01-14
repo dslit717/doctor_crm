@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AlertTriangle, Clock } from 'lucide-react'
 import styles from './inventory.module.scss'
 
@@ -58,15 +58,7 @@ export default function InventoryPage() {
   const [showLowStock, setShowLowStock] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    fetchAlerts()
-  }, [])
-
-  useEffect(() => {
-    fetchData()
-  }, [activeTab, showLowStock])
-
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
     try {
       const res = await fetch('/api/inventory/alerts')
       const data = await res.json()
@@ -74,9 +66,9 @@ export default function InventoryPage() {
     } catch (error) {
       console.error('Alerts fetch error:', error)
     }
-  }
+  }, [])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       if (activeTab === 'items') {
@@ -97,7 +89,15 @@ export default function InventoryPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [activeTab, showLowStock, searchTerm])
+
+  useEffect(() => {
+    fetchAlerts()
+  }, [fetchAlerts])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

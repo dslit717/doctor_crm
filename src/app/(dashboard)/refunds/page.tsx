@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 import styles from './refunds.module.scss'
 
 interface Refund {
@@ -49,6 +50,7 @@ const methodLabels: Record<string, string> = {
 }
 
 export default function RefundsPage() {
+  const { user } = useAuth()
   const [refunds, setRefunds] = useState<Refund[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
@@ -96,6 +98,11 @@ export default function RefundsPage() {
   const handleApprove = async (id: string) => {
     if (!confirm('환불을 승인하시겠습니까?')) return
 
+    if (!user?.employee?.id) {
+      alert('사용자 정보를 불러올 수 없습니다.')
+      return
+    }
+
     try {
       const res = await fetch('/api/refunds', {
         method: 'PUT',
@@ -103,7 +110,7 @@ export default function RefundsPage() {
         body: JSON.stringify({
           id,
           action: 'approve',
-          approved_by: 'current-user-id' // TODO: 실제 사용자 ID로 변경
+          approved_by: user.employee.id
         })
       })
 
@@ -123,6 +130,11 @@ export default function RefundsPage() {
   const handleReject = async (id: string) => {
     if (!confirm('환불을 거절하시겠습니까?')) return
 
+    if (!user?.employee?.id) {
+      alert('사용자 정보를 불러올 수 없습니다.')
+      return
+    }
+
     try {
       const res = await fetch('/api/refunds', {
         method: 'PUT',
@@ -130,7 +142,7 @@ export default function RefundsPage() {
         body: JSON.stringify({
           id,
           action: 'reject',
-          approved_by: 'current-user-id' // TODO: 실제 사용자 ID로 변경
+          approved_by: user.employee.id
         })
       })
 

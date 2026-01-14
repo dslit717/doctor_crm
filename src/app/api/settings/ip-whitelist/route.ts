@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // IP 화이트리스트 조회
 export async function GET() {
   try {
@@ -35,10 +37,10 @@ export async function GET() {
 }
 
 // IP 화이트리스트 추가
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { ipAddress, description } = body
 
     // IP 형식 검증
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 세션에서 직원 ID 조회
-    const sessionToken = request.cookies.get('session_token')?.value
+    const sessionToken = req.cookies.get('session_token')?.value
     let createdBy = null
     
     if (sessionToken) {
@@ -118,10 +120,10 @@ export async function POST(request: NextRequest) {
 }
 
 // IP 화이트리스트 수정
-export async function PATCH(request: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { id, isActive, description } = body
 
     const updateData: { is_active?: boolean; description?: string } = {}
@@ -151,10 +153,10 @@ export async function PATCH(request: NextRequest) {
 }
 
 // IP 화이트리스트 삭제
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const id = searchParams.get('id')
 
     if (!id) {

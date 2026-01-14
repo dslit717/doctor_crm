@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, Plus, X, CreditCard, Banknote, Building2, Smartphone } from 'lucide-react'
 import styles from './payments.module.scss'
 
@@ -98,11 +98,7 @@ export default function PaymentsPage() {
     unpaidAmount: 0
   })
 
-  useEffect(() => {
-    fetchPayments()
-  }, [statusFilter])
-
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -127,7 +123,11 @@ export default function PaymentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter])
+
+  useEffect(() => {
+    fetchPayments()
+  }, [fetchPayments])
 
   const handleAddPayment = () => {
     setSelectedPayment(null)

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 감사 로그 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     
     // 필터 파라미터
     const employeeId = searchParams.get('employeeId')
@@ -73,11 +75,11 @@ export async function GET(request: NextRequest) {
 }
 
 // 감사 로그 기록 (내부 API용)
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
-    const sessionToken = request.cookies.get('session_token')?.value
+    const body = await req.json()
+    const sessionToken = req.cookies.get('session_token')?.value
 
     // 세션에서 직원 정보 조회
     let employeeInfo = null
@@ -105,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     // IP 주소
-    const forwardedFor = request.headers.get('x-forwarded-for')
+    const forwardedFor = req.headers.get('x-forwarded-for')
     const ipAddress = forwardedFor?.split(',')[0].trim() || '127.0.0.1'
 
     // 감사 로그 삽입
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
         employee_name: employeeInfo?.employeeName || body.employeeName,
         session_id: employeeInfo?.sessionId,
         ip_address: ipAddress,
-        user_agent: request.headers.get('user-agent'),
+        user_agent: req.headers.get('user-agent'),
         action_type: body.actionType,
         action_category: body.actionCategory,
         action_detail: body.actionDetail,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, Plus, Edit, Trash2, X } from 'lucide-react'
 import styles from './services.module.scss'
 
@@ -15,7 +15,7 @@ interface Service {
   description?: string
   is_active: boolean
   sort_order: number
-  custom_data?: Record<string, any>
+  custom_data?: Record<string, string | number>
   created_at: string
 }
 
@@ -59,14 +59,10 @@ export default function ServicesPage() {
     description: '',
     is_active: true,
     sort_order: 0,
-    custom_data: {} as Record<string, any>
+    custom_data: {} as Record<string, string | number>
   })
 
-  useEffect(() => {
-    fetchServices()
-  }, [searchTerm, selectedCategory, showActiveOnly])
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -85,7 +81,11 @@ export default function ServicesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchTerm, selectedCategory, showActiveOnly])
+
+  useEffect(() => {
+    fetchServices()
+  }, [fetchServices])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -573,7 +573,7 @@ export default function ServicesPage() {
                             <select
                               value={field.field_type}
                               onChange={(e) => updateCustomField(field.id, { 
-                                field_type: e.target.value as any,
+                                field_type: e.target.value as 'text' | 'number' | 'select' | 'textarea',
                                 options: e.target.value === 'select' ? [''] : undefined
                               })}
                             >

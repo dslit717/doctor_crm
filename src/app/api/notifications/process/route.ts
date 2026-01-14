@@ -51,7 +51,18 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function processNotification(supabase: any, setting: any) {
+interface NotificationSetting {
+  category: string
+  template_code: string
+  timing?: { days_before?: number; days_after?: number }
+  conditions?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+async function processNotification(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  setting: NotificationSetting
+) {
   const { category, template_code, timing, conditions } = setting
   const result = { sent: 0, failed: 0 }
 
@@ -161,7 +172,9 @@ async function processNotification(supabase: any, setting: any) {
   return result
 }
 
-async function sendNotification(supabase: any, params: {
+async function sendNotification(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  params: {
   patient_id: string
   template_code: string
   to: string
