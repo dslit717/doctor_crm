@@ -87,9 +87,11 @@ export function ReservationModal({
       const data = await res.json();
       if (data.success) {
         setSearchResults(data.data || []);
+      } else {
+        setSearchResults([]);
       }
     } catch (error) {
-      console.error('환자 검색 오류:', error);
+      setSearchResults([]);
     }
   }, []);
 
@@ -195,19 +197,25 @@ export function ReservationModal({
                       />
                     </div>
                   )}
-                  {showSearch && searchResults.length > 0 && (
+                  {showSearch && searchTerm.length >= 2 && (
                     <div className="search-results">
-                      {searchResults.map((patient) => (
-                        <div
-                          key={patient.id}
-                          className="search-item"
-                          onClick={() => selectPatient(patient)}
-                        >
-                          <span className="chart-no">{patient.chart_no}</span>
-                          <span className="name">{patient.name}</span>
-                          <span className="phone">{patient.phone}</span>
+                      {searchResults.length > 0 ? (
+                        searchResults.map((patient) => (
+                          <div
+                            key={patient.id}
+                            className="search-item"
+                            onClick={() => selectPatient(patient)}
+                          >
+                            <span className="chart-no">{patient.chart_no}</span>
+                            <span className="name">{patient.name}</span>
+                            <span className="phone">{patient.phone}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="search-item" style={{ color: '#999', cursor: 'default' }}>
+                          검색 결과가 없습니다
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
                 </div>

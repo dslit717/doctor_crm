@@ -457,6 +457,12 @@
             flex-direction: column;
             overflow: hidden;
 
+            &.drag-over {
+              background: #DBEAFE;
+              border-color: #3B82F6;
+              border-width: 2px;
+            }
+
             .slot-header {
               display: flex;
               justify-content: space-between;
@@ -506,7 +512,17 @@
                 font-weight: 500;
                 color: #121212;
                 padding: 2px 0;
-                cursor: pointer;
+                cursor: move;
+                user-select: none;
+                transition: opacity 0.2s;
+
+                &:hover {
+                  opacity: 0.8;
+                }
+
+                &.dragging {
+                  opacity: 0.5;
+                }
 
                 .required-mark {
                   color: #EF4444;
@@ -606,6 +622,12 @@
             flex-direction: column;
             overflow: hidden;
 
+            &.drag-over {
+              background: #DBEAFE;
+              border-color: #3B82F6;
+              border-width: 2px;
+            }
+
             .slot-header {
               display: flex;
               justify-content: space-between;
@@ -655,7 +677,17 @@
                 font-weight: 500;
                 color: #121212;
                 padding: 2px 0;
-                cursor: pointer;
+                cursor: move;
+                user-select: none;
+                transition: opacity 0.2s;
+
+                &:hover {
+                  opacity: 0.8;
+                }
+
+                &.dragging {
+                  opacity: 0.5;
+                }
 
                 .required-mark {
                   color: #EF4444;

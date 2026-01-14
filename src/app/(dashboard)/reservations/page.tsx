@@ -25,6 +25,8 @@ export default function ReservationsPage() {
   const [selectedSlot, setSelectedSlot] = useState<{ date: string; time: string } | null>(null);
   const [viewMode, setViewMode] = useState<'day' | 'week'>('week');
   const [filterTab, setFilterTab] = useState<'all' | 'reservation' | 'checkin' | 'cancelled'>('all');
+  const [draggedReservation, setDraggedReservation] = useState<Reservation | null>(null);
+  const [dragOverSlot, setDragOverSlot] = useState<{ date: string; time: string } | null>(null);
 
   const {
     reservations,
@@ -103,6 +105,54 @@ export default function ReservationsPage() {
     if (success) {
       setSelectedReservation(null);
     }
+  };
+
+  // 드래그 앤 드롭 핸들러
+  const handleDragStart = (e: React.DragEvent, reservation: Reservation) => {
+    setDraggedReservation(reservation);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', reservation.id || '');
+  };
+
+  const handleDragOver = (e: React.DragEvent, date: string, time: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverSlot({ date, time });
+  };
+
+  const handleDragLeave = () => {
+    setDragOverSlot(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, date: string, time: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverSlot(null);
+
+    if (!draggedReservation || !draggedReservation.id) return;
+
+    // 같은 위치면 무시
+    if (draggedReservation.date === date && draggedReservation.time === time) {
+      setDraggedReservation(null);
+      return;
+    }
+
+    // 예약 시간 업데이트
+    const success = await updateReservation(draggedReservation.id, {
+      date,
+      time,
+    });
+
+    if (success) {
+      setDraggedReservation(null);
+    } else {
+      alert('예약 시간 변경에 실패했습니다.');
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedReservation(null);
+    setDragOverSlot(null);
   };
 
   return (
@@ -286,11 +336,16 @@ export default function ReservationsPage() {
                                 return r.date === dateStr && r.time === slotTime;
                               });
                               
+                              const isDragOver = dragOverSlot?.date === dateStr && dragOverSlot?.time === slotTime;
+                              
                               return (
                                 <div
                                   key={offset}
-                                  className="time-slot-card"
+                                  className={`time-slot-card ${isDragOver ? 'drag-over' : ''}`}
                                   onClick={() => handleSlotClick(date, slotTime)}
+                                  onDragOver={(e) => handleDragOver(e, dateStr, slotTime)}
+                                  onDragLeave={handleDragLeave}
+                                  onDrop={(e) => handleDrop(e, dateStr, slotTime)}
                                 >
                                   <div className="slot-header">
                                     <span className="slot-time">{slotTime}</span>
@@ -300,10 +355,14 @@ export default function ReservationsPage() {
                                     <div className="slot-patients">
                                       {slotReservations.map((reservation, idx) => {
                                         const category = CATEGORIES.find(c => c.id === reservation.category);
+                                        const isDragging = draggedReservation?.id === reservation.id;
                                         return (
                                           <div
                                             key={reservation.id}
-                                            className="patient-name-item"
+                                            className={`patient-name-item ${isDragging ? 'dragging' : ''}`}
+                                            draggable
+                                            onDragStart={(e) => handleDragStart(e, reservation)}
+                                            onDragEnd={handleDragEnd}
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               setSelectedReservation(reservation);
@@ -353,11 +412,16 @@ export default function ReservationsPage() {
                           return r.date === dateStr && r.time === slotTime;
                         });
                         
+                        const isDragOver = dragOverSlot?.date === dateStr && dragOverSlot?.time === slotTime;
+                        
                         return (
                           <div
                             key={offset}
-                            className="time-slot-card"
+                            className={`time-slot-card ${isDragOver ? 'drag-over' : ''}`}
                             onClick={() => handleSlotClick(selectedDate, slotTime)}
+                            onDragOver={(e) => handleDragOver(e, dateStr, slotTime)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, dateStr, slotTime)}
                           >
                             <div className="slot-header">
                               <span className="slot-time">{slotTime}</span>
@@ -367,10 +431,14 @@ export default function ReservationsPage() {
                               <div className="slot-patients">
                                 {slotReservations.map((reservation, idx) => {
                                   const category = CATEGORIES.find(c => c.id === reservation.category);
+                                  const isDragging = draggedReservation?.id === reservation.id;
                                   return (
                                     <div
                                       key={reservation.id}
-                                      className="patient-name-item"
+                                      className={`patient-name-item ${isDragging ? 'dragging' : ''}`}
+                                      draggable
+                                      onDragStart={(e) => handleDragStart(e, reservation)}
+                                      onDragEnd={handleDragEnd}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         setSelectedReservation(reservation);
