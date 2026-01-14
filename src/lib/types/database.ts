@@ -1242,6 +1242,12 @@ export interface Permission {
   name: string
   category: string
   description?: string | null
+  can_create?: boolean | null
+  can_read?: boolean | null
+  can_update?: boolean | null
+  can_delete?: boolean | null
+  can_export?: boolean | null
+  can_bulk_edit?: boolean | null
   created_at?: string | null
   updated_at?: string | null
 }
