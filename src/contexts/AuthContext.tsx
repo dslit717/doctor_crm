@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import type { CurrentUser, UserPermission } from '@/lib/auth/types'
-import type { Menu, Role } from '@/lib/types/database'
 import { can, hasRole, hasRoleLevel, canAccessMenu } from '@/lib/auth/permissions'
 
 interface SessionInfo {

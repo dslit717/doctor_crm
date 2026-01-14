@@ -1210,3 +1210,53 @@ export type TablesUpdate<
       ? U
       : never
     : never
+
+// 추가 타입 정의 (인증 및 권한 관련)
+export type RoleCode = 
+  | 'director'
+  | 'vice_director'
+  | 'manager'
+  | 'doctor'
+  | 'coordinator'
+  | 'counselor'
+  | 'nurse'
+  | 'therapist'
+  | 'staff'
+
+export type DataScope = 'all' | 'department' | 'own'
+
+export interface Role {
+  id: string
+  code: RoleCode
+  name: string
+  level: number
+  is_active: boolean
+  description?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface Permission {
+  id: string
+  code: string
+  name: string
+  category: string
+  description?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface Menu {
+  id: string
+  code: string
+  name: string
+  path: string
+  icon?: string | null
+  parent_id?: string | null
+  sort_order?: number | null
+  is_active?: boolean | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export type Employee = Tables<'employees'>
