@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 재고 알림 조회 (부족 + 유통기한 임박)
 export async function GET() {
   try {
+    const supabase = getSupabaseServer()
     // 1. 재고 부족 품목
     const { data: items } = await supabase
       .from('inventory_items')
