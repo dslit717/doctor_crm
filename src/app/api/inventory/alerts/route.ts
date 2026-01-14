@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 재고 알림 조회 (부족 + 유통기한 임박)
 export async function GET() {
   try {

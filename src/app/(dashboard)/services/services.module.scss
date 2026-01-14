@@ -246,8 +246,6 @@
 }
 
 .formSection {
-  margin-bottom: 20px;
-
   h4 {
     font-size: 13px;
     font-weight: 600;
@@ -300,7 +298,7 @@
 .checkboxField {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-end;
 
   .checkboxRow {
     margin-top: 0;
@@ -310,7 +308,7 @@
 
 .checkboxRow {
   display: flex;
-  gap: 20px;
+  gap: 8px;
   align-items: center;
   min-height: 36px; // input 높이와 맞추기 (8px padding * 2 + 14px font + 여유)
 
@@ -369,6 +367,158 @@
 
   &:hover {
     opacity: 0.9;
+  }
+}
+
+// 커스텀 필드 섹션
+.customFieldsSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $gray-200;
+}
+
+.customFieldsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: $gray-700;
+  }
+}
+
+.addFieldBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #F3F4F6;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: $gray-700;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #E5E7EB;
+  }
+}
+
+.customFieldBox {
+  margin: 15px 0;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid $gray-200;
+}
+
+.removeFieldBtnWrapper {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+}
+
+.removeFieldBtn {
+  padding: 10px 12px;
+  background: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #DC2626;
+  }
+}
+
+.optionsSection {
+  margin-bottom: 12px;
+}
+
+.optionsLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: $gray-700;
+}
+
+.optionRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.optionInput {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.removeOptionBtn {
+  padding: 6px 10px;
+  background: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #DC2626;
+  }
+}
+
+.addOptionBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #F3F4F6;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: $gray-700;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #E5E7EB;
+  }
+}
+
+.customFieldInputWrapper {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid $gray-200;
+}
+
+.customFieldInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $gray-700;
+  background-color: $white;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #3B82F6;
   }
 }
 

@@ -15,7 +15,16 @@ interface Service {
   description?: string
   is_active: boolean
   sort_order: number
+  custom_data?: Record<string, any>
   created_at: string
+}
+
+interface CustomField {
+  id: string
+  field_name: string
+  field_key: string
+  field_type: 'text' | 'number' | 'select' | 'textarea'
+  options?: string[] // select 타입일 때 옵션들
 }
 
 const categoryLabels: Record<string, string> = {
@@ -39,6 +48,7 @@ export default function ServicesPage() {
   const [showActiveOnly, setShowActiveOnly] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
+  const [customFields, setCustomFields] = useState<CustomField[]>([])
   const [formData, setFormData] = useState({
     service_code: '',
     name: '',
@@ -48,7 +58,8 @@ export default function ServicesPage() {
     duration_minutes: 30,
     description: '',
     is_active: true,
-    sort_order: 0
+    sort_order: 0,
+    custom_data: {} as Record<string, any>
   })
 
   useEffect(() => {
@@ -117,8 +128,10 @@ export default function ServicesPage() {
       duration_minutes: service.duration_minutes,
       description: service.description || '',
       is_active: service.is_active,
-      sort_order: service.sort_order
+      sort_order: service.sort_order,
+      custom_data: service.custom_data || {}
     })
+    setCustomFields([])
     setShowModal(true)
   }
 
@@ -150,9 +163,125 @@ export default function ServicesPage() {
       duration_minutes: 30,
       description: '',
       is_active: true,
-      sort_order: 0
+      sort_order: 0,
+      custom_data: {}
     })
+    setCustomFields([])
     setEditingService(null)
+  }
+
+  const addCustomField = () => {
+    const newField: CustomField = {
+      id: Date.now().toString(),
+      field_name: '',
+      field_key: '',
+      field_type: 'text',
+      options: []
+    }
+    setCustomFields([...customFields, newField])
+  }
+
+  const updateCustomField = (id: string, updates: Partial<CustomField>) => {
+    setCustomFields(customFields.map(field => 
+      field.id === id ? { ...field, ...updates } : field
+    ))
+  }
+
+  const removeCustomField = (id: string) => {
+    const field = customFields.find(f => f.id === id)
+    setCustomFields(customFields.filter(field => field.id !== id))
+    // custom_data에서도 제거
+    if (field?.field_key) {
+      const newCustomData = { ...formData.custom_data }
+      delete newCustomData[field.field_key]
+      setFormData({ ...formData, custom_data: newCustomData })
+    }
+  }
+
+  const addOptionToField = (fieldId: string) => {
+    setCustomFields(customFields.map(field => 
+      field.id === fieldId 
+        ? { ...field, options: [...(field.options || []), ''] }
+        : field
+    ))
+  }
+
+  const updateFieldOption = (fieldId: string, optionIndex: number, value: string) => {
+    setCustomFields(customFields.map(field => 
+      field.id === fieldId
+        ? {
+            ...field,
+            options: field.options?.map((opt, idx) => idx === optionIndex ? value : opt) || []
+          }
+        : field
+    ))
+  }
+
+  const removeFieldOption = (fieldId: string, optionIndex: number) => {
+    setCustomFields(customFields.map(field => 
+      field.id === fieldId
+        ? {
+            ...field,
+            options: field.options?.filter((_, idx) => idx !== optionIndex) || []
+          }
+        : field
+    ))
+  }
+
+  const handleCustomFieldChange = (fieldKey: string, value: string | number) => {
+    setFormData({
+      ...formData,
+      custom_data: { ...formData.custom_data, [fieldKey]: value }
+    })
+  }
+
+  const renderCustomFieldInput = (field: CustomField) => {
+    const value = formData.custom_data[field.field_key] || ''
+
+    switch (field.field_type) {
+      case 'text':
+        return (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.field_key, e.target.value)}
+            className={styles.customFieldInput}
+          />
+        )
+      case 'number':
+        return (
+          <input
+            type="number"
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.field_key, parseFloat(e.target.value) || 0)}
+            className={styles.customFieldInput}
+          />
+        )
+      case 'select':
+        return (
+          <select
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.field_key, e.target.value)}
+            className={styles.customFieldInput}
+          >
+            <option value="">선택하세요</option>
+            {field.options?.filter(opt => opt.trim()).map((option, idx) => (
+              <option key={idx} value={option}>{option}</option>
+            ))}
+          </select>
+        )
+      case 'textarea':
+        return (
+          <textarea
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.field_key, e.target.value)}
+            rows={3}
+            className={styles.customFieldInput}
+          />
+        )
+      default:
+        return null
+    }
   }
 
   const openAddModal = () => {
@@ -259,7 +388,7 @@ export default function ServicesPage() {
       )}
 
       {showModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+        <div className={styles.modalOverlay}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>{editingService ? '서비스 수정' : '서비스 등록'}</h2>
@@ -349,7 +478,6 @@ export default function ServicesPage() {
                       />
                     </div>
                     <div className={`${styles.formField} ${styles.checkboxField}`}>
-                      <label>활성</label>
                       <div className={styles.checkboxRow}>
                         <label>
                           <input
@@ -371,6 +499,142 @@ export default function ServicesPage() {
                         rows={3}
                       />
                     </div>
+                  </div>
+
+                  {/* 이미 저장된 커스텀 필드들의 실제 입력 필드들 (등록/수정 완료 후에만 표시) */}
+                  {Object.keys(formData.custom_data || {})
+                    .filter(key => !customFields.some(field => field.field_key === key))
+                    .map((key) => {
+                      const value = formData.custom_data[key]
+                      const fieldType = typeof value === 'number' ? 'number' : 
+                                       (value && typeof value === 'string' && value.length > 50) ? 'textarea' : 'text'
+                      
+                      return (
+                        <div key={key} className={styles.formRow}>
+                          <div className={styles.formField}>
+                            <label>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                            {fieldType === 'number' ? (
+                              <input
+                                type="number"
+                                value={value || ''}
+                                onChange={(e) => handleCustomFieldChange(key, parseFloat(e.target.value) || 0)}
+                              />
+                            ) : fieldType === 'textarea' ? (
+                              <textarea
+                                value={value || ''}
+                                onChange={(e) => handleCustomFieldChange(key, e.target.value)}
+                                rows={3}
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={value || ''}
+                                onChange={(e) => handleCustomFieldChange(key, e.target.value)}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+
+                  {/* 커스텀 필드 정의 섹션 */}
+                  <div className={styles.customFieldsSection}>
+                    <div className={styles.customFieldsHeader}>
+                      <h4>추가 필드</h4>
+                      <button
+                        type="button"
+                        onClick={addCustomField}
+                        className={styles.addFieldBtn}
+                      >
+                        <Plus size={14} />
+                        필드 추가
+                      </button>
+                    </div>
+
+                    {customFields.map((field) => (
+                      <div key={field.id} className={styles.customFieldBox}>
+                        <div className={`${styles.formRow} mb-3`}>
+                          <div className={styles.formField}>
+                            <label>필드명</label>
+                            <input
+                              type="text"
+                              value={field.field_name}
+                              onChange={(e) => {
+                                const fieldKey = e.target.value.toLowerCase().replace(/\s+/g, '_')
+                                updateCustomField(field.id, { 
+                                  field_name: e.target.value,
+                                  field_key: fieldKey
+                                })
+                              }}
+                            />
+                          </div>
+                          <div className={styles.formField}>
+                            <label>필드 타입</label>
+                            <select
+                              value={field.field_type}
+                              onChange={(e) => updateCustomField(field.id, { 
+                                field_type: e.target.value as any,
+                                options: e.target.value === 'select' ? [''] : undefined
+                              })}
+                            >
+                              <option value="text">텍스트</option>
+                              <option value="number">숫자</option>
+                              <option value="select">선택</option>
+                              <option value="textarea">텍스트 영역</option>
+                            </select>
+                          </div>
+                          <div className={`${styles.formField} ${styles.removeFieldBtnWrapper}`}>
+                            <button
+                              type="button"
+                              onClick={() => removeCustomField(field.id)}
+                              className={styles.removeFieldBtn}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {field.field_type === 'select' && (
+                          <div className={styles.optionsSection}>
+                            <label className={styles.optionsLabel}>
+                              옵션 목록
+                            </label>
+                            {field.options?.map((option, idx) => (
+                              <div key={idx} className={styles.optionRow}>
+                                <input
+                                  type="text"
+                                  value={option}
+                                  onChange={(e) => updateFieldOption(field.id, idx, e.target.value)}
+                                  placeholder="옵션 입력"
+                                  className={styles.optionInput}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeFieldOption(field.id, idx)}
+                                  className={styles.removeOptionBtn}
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => addOptionToField(field.id)}
+                              className={styles.addOptionBtn}
+                            >
+                              <Plus size={12} /> 옵션 추가
+                            </button>
+                          </div>
+                        )}
+
+                        {/* 필드명이 입력되면 실제 입력 필드 표시 */}
+                        {field.field_name && field.field_name.trim().length >= 2 && field.field_key && (
+                          <div className={styles.customFieldInputWrapper}>
+                            {renderCustomFieldInput(field)}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

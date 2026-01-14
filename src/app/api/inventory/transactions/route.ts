@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 입출고 내역 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const itemId = searchParams.get('item_id')
     const type = searchParams.get('type')
 
@@ -34,10 +36,10 @@ export async function GET(request: NextRequest) {
 }
 
 // 입출고 처리
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { item_id, transaction_type, quantity, unit_price, lot_number, expiry_date, reason, performed_by } = body
 
     // 1. 트랜잭션 기록

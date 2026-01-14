@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 유지보수 기록 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const equipmentId = searchParams.get('equipment_id')
 
     let query = supabase
@@ -30,10 +32,10 @@ export async function GET(request: NextRequest) {
 }
 
 // 유지보수 기록 등록
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { equipment_id, maintenance_type, maintenance_date, description, cost, performed_by, next_maintenance_date } = body
 
     // 1. 유지보수 기록 추가

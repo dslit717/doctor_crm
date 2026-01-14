@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styles from './hr.module.scss'
 
 interface Employee {
@@ -47,11 +47,7 @@ export default function HRPage() {
   const [leaves, setLeaves] = useState<Leave[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchData()
-  }, [activeTab])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       if (activeTab === 'employees') {
@@ -68,7 +64,11 @@ export default function HRPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [activeTab])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleLeaveAction = async (id: string, status: 'approved' | 'rejected') => {
     try {

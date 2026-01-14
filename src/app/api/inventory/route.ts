@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 // 재고 품목 조회
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const searchParams = request.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams
     const category = searchParams.get('category')
     const search = searchParams.get('search')
     const lowStock = searchParams.get('low_stock') // 재고 부족 필터
@@ -37,10 +39,10 @@ export async function GET(request: NextRequest) {
 }
 
 // 품목 등록
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
 
     const { data, error } = await supabase
       .from('inventory_items')
@@ -58,10 +60,10 @@ export async function POST(request: NextRequest) {
 }
 
 // 품목 수정
-export async function PATCH(request: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const supabase = getSupabaseServer()
-    const body = await request.json()
+    const body = await req.json()
     const { id, ...updateData } = body
 
     const { data, error } = await supabase

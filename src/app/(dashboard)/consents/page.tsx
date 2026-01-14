@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Plus, Edit, Trash2, X, FileText, CheckCircle, XCircle, Clock } from 'lucide-react'
 import styles from './consents.module.scss'
 
@@ -83,15 +83,7 @@ export default function ConsentsPage() {
     totalPages: 0
   })
 
-  useEffect(() => {
-    if (activeTab === 'templates') {
-      fetchTemplates()
-    } else {
-      fetchConsents()
-    }
-  }, [activeTab, statusFilters, statusPagination.page])
-
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/consents/templates?include_inactive=true')
@@ -105,9 +97,9 @@ export default function ConsentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const fetchConsents = async () => {
+  const fetchConsents = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -129,7 +121,15 @@ export default function ConsentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilters, statusPagination.page])
+
+  useEffect(() => {
+    if (activeTab === 'templates') {
+      fetchTemplates()
+    } else {
+      fetchConsents()
+    }
+  }, [activeTab, fetchTemplates, fetchConsents])
 
   const handleSubmitTemplate = async (e: React.FormEvent) => {
     e.preventDefault()

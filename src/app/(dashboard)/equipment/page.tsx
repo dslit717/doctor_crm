@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styles from './equipment.module.scss'
 
 interface Equipment {
@@ -51,11 +51,7 @@ export default function EquipmentPage() {
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('')
 
-  useEffect(() => {
-    fetchData()
-  }, [activeTab, selectedCategory])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       if (activeTab === 'equipment') {
@@ -75,7 +71,11 @@ export default function EquipmentPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [activeTab, selectedCategory])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   return (
     <div className={styles.container}>
