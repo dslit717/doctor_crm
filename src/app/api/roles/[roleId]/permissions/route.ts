@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 역할의 권한 조회
 export async function GET(
@@ -13,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { roleId } = await params
 
     // 역할-권한 매핑 조회
@@ -60,6 +55,7 @@ export async function POST(
   { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { roleId } = await params
     const body = await request.json()
     const { permissionId, dataScope = 'own' } = body
@@ -108,6 +104,7 @@ export async function PUT(
   { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { roleId } = await params
     const body = await request.json()
     const { permissions } = body // [{ permissionId, dataScope }]
@@ -150,8 +147,9 @@ export async function DELETE(
   { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { roleId } = await params
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
     const permissionId = searchParams.get('permissionId')
 
     if (!permissionId) {

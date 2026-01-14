@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 역할 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const includePermissions = searchParams.get('includePermissions') === 'true'
 
     if (includePermissions) {
@@ -83,6 +78,7 @@ export async function GET(request: NextRequest) {
 // 역할 생성
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { name, code, description, level } = body
 
@@ -128,6 +124,7 @@ export async function POST(request: NextRequest) {
 // 역할 수정
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { id, name, description, level, isActive } = body
 

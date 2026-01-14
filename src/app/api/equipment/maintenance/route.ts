@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 유지보수 기록 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const equipmentId = searchParams.get('equipment_id')
 
     let query = supabase
@@ -37,6 +32,7 @@ export async function GET(request: NextRequest) {
 // 유지보수 기록 등록
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { equipment_id, maintenance_type, maintenance_date, description, cost, performed_by, next_maintenance_date } = body
 

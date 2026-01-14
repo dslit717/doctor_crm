@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 장비 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const category = searchParams.get('category')
     const status = searchParams.get('status')
 
@@ -36,6 +31,7 @@ export async function GET(request: NextRequest) {
 // 장비 등록
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
 
     const { data, error } = await supabase
@@ -56,6 +52,7 @@ export async function POST(request: NextRequest) {
 // 장비 수정
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { id, ...updateData } = body
 

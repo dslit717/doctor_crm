@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseServer } from '@/lib/supabase-server'
 import { generateTotpSecret, generateQrCode } from '@/lib/auth/two-factor'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 // 2FA 설정 시작 (QR 코드 생성)
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const { employeeId, method } = await request.json()
 
     if (!employeeId || !method) {
@@ -114,7 +110,8 @@ export async function POST(request: NextRequest) {
 // 2FA 설정 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const employeeId = searchParams.get('employeeId')
 
     if (!employeeId) {

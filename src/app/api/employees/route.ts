@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 직원 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     
     const status = searchParams.get('status')
     const departmentId = searchParams.get('departmentId')
@@ -87,7 +82,7 @@ export async function GET(request: NextRequest) {
     // 역할 ID로 필터링
     if (roleId) {
       enrichedData = enrichedData.filter(emp => 
-        emp.roles?.some(r => r.role?.id === roleId)
+        emp.roles?.some((r: { role?: { id: string } }) => r.role?.id === roleId)
       )
     }
 
@@ -114,6 +109,7 @@ export async function GET(request: NextRequest) {
 // 직원 생성
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { 
       employeeNo, name, email, phone, departmentId, position, 
@@ -219,6 +215,7 @@ export async function POST(request: NextRequest) {
 // 직원 수정
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { 
       id, name, email, phone, departmentId, position, 
@@ -296,7 +293,8 @@ export async function PATCH(request: NextRequest) {
 // 직원 삭제 (소프트 딜리트)
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const id = searchParams.get('id')
 
     if (!id) {

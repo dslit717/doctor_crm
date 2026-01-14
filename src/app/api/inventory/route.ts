@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 재고 품목 조회
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const category = searchParams.get('category')
     const search = searchParams.get('search')
     const lowStock = searchParams.get('low_stock') // 재고 부족 필터
@@ -44,6 +39,7 @@ export async function GET(request: NextRequest) {
 // 품목 등록
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
 
     const { data, error } = await supabase
@@ -64,6 +60,7 @@ export async function POST(request: NextRequest) {
 // 품목 수정
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { id, ...updateData } = body
 
