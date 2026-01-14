@@ -48,26 +48,29 @@
   gap: 8px;
   margin-bottom: 24px;
   border-bottom: 1px solid $gray-200;
-  padding-bottom: 8px;
 }
 
 .tab {
-  padding: 10px 20px;
-  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
   background: none;
-  font-size: 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
   color: $gray-600;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 6px;
   transition: all 0.2s;
 
   &:hover {
-    background: $gray-100;
+    color: $gray-900;
   }
 
   &.active {
-    background: $primary;
-    color: $white;
+    color: $primary;
+    border-bottom-color: $primary;
   }
 }
 
@@ -129,6 +132,7 @@
   padding: 40px;
   text-align: center;
   color: $gray-500;
+  font-size: 14px;
 }
 
 .tableWrapper {

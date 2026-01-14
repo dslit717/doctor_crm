@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // IP 화이트리스트 조회
 export async function GET() {
   try {
+    const supabase = getSupabaseServer()
     const { data, error } = await supabase
       .from('ip_whitelist')
       .select(`
@@ -42,6 +37,7 @@ export async function GET() {
 // IP 화이트리스트 추가
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { ipAddress, description } = body
 
@@ -124,6 +120,7 @@ export async function POST(request: NextRequest) {
 // IP 화이트리스트 수정
 export async function PATCH(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer()
     const body = await request.json()
     const { id, isActive, description } = body
 
@@ -156,7 +153,8 @@ export async function PATCH(request: NextRequest) {
 // IP 화이트리스트 삭제
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const supabase = getSupabaseServer()
+    const searchParams = request.nextUrl.searchParams
     const id = searchParams.get('id')
 
     if (!id) {

@@ -1,0 +1,473 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  flex: 1;
+
+  svg {
+    color: $gray-400;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+  }
+
+  &:focus-within {
+    border-color: $primary;
+  }
+}
+
+.searchBtn {
+  padding: 8px 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 120px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: $gray-500;
+  font-size: 14px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+    font-size: 14px;
+  }
+
+  th {
+    background: $gray-50;
+    font-weight: 600;
+    color: $gray-700;
+  }
+
+  td {
+    color: $gray-600;
+  }
+
+  tbody tr:hover {
+    background: $gray-50;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: $gray-50;
+  }
+}
+
+.chartNo {
+  font-family: 'SF Mono', Consolas, monospace;
+  color: $gray-500 !important;
+  font-size: 13px !important;
+}
+
+.name {
+  font-weight: 600;
+  color: $gray-900 !important;
+}
+
+.empty {
+  text-align: center !important;
+  padding: 40px !important;
+  color: $gray-400;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.inactive {
+    background: $gray-100;
+    color: $gray-600;
+  }
+
+  &.blacklist {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.editBtn {
+  background: none;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  color: $gray-500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: $gray-50;
+    color: $primary;
+    border-color: $primary;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+
+  button {
+    padding: 8px 16px;
+    border: 1px solid $gray-300;
+    background: $white;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: $gray-50;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    font-size: 14px;
+    color: $gray-600;
+  }
+}
+
+// 모달 (예약 모달 스타일)
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: $white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid $gray-200;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: $gray-400;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover {
+    color: $gray-600;
+  }
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.formSection {
+  margin-bottom: 20px;
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: $gray-500;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formField {
+  flex: 1;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: $gray-700;
+    margin-bottom: 6px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+
+    &[readonly] {
+      background: $gray-50;
+      color: $gray-600;
+    }
+  }
+}
+
+.radioGroup {
+  display: flex;
+  gap: 16px;
+  padding-top: 6px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: $gray-700;
+    cursor: pointer;
+    margin-bottom: 0;
+
+    input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: $primary;
+    }
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 20px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: $gray-600;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: $primary;
+    }
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  margin-top: 20px;
+  border-top: 1px solid $gray-200;
+}
+
+.footerRight {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btnDelete {
+  padding: 12px 20px;
+  background: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.btnCancel {
+  padding: 12px 20px;
+  background: #F3F4F6;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    background: #E5E7EB;
+  }
+}
+
+.btnSubmit {
+  padding: 12px 20px;
+  background: #3B82F6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.btnChart {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  background: #E3F2FD;
+  color: #1565C0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    background: #BBDEFB;
+  }
+}
+

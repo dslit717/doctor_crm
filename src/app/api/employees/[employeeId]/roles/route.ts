@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase-server'
 
 // 직원의 역할 조회
 export async function GET(
@@ -13,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ employeeId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { employeeId } = await params
 
     // 직원-역할 매핑 조회
@@ -61,6 +56,7 @@ export async function POST(
   { params }: { params: Promise<{ employeeId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { employeeId } = await params
     const body = await request.json()
     const { roleId, isPrimary = false } = body
@@ -134,6 +130,7 @@ export async function PUT(
   { params }: { params: Promise<{ employeeId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { employeeId } = await params
     const body = await request.json()
     const { roleIds, primaryRoleId } = body
@@ -192,8 +189,9 @@ export async function DELETE(
   { params }: { params: Promise<{ employeeId: string }> }
 ) {
   try {
+    const supabase = getSupabaseServer()
     const { employeeId } = await params
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
     const roleId = searchParams.get('roleId')
 
     if (!roleId) {

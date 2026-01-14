@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Calendar, ChevronLeft, ChevronRight, LogOut, Users, Package, Cpu, Settings } from 'lucide-react';
+import { Home, Calendar, ChevronLeft, ChevronRight, LogOut, Users, Package, Cpu, Settings, UserRound, CreditCard, ShoppingBag, RotateCcw, Clock, MessageSquare, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './Sidebar.module.scss';
 
@@ -20,7 +20,14 @@ export default function Sidebar() {
 
   const menuItems = [
     { id: 'home', name: '홈', icon: Home, path: '/' },
+    { id: 'patients', name: '환자관리', icon: UserRound, path: '/patients' },
     { id: 'reservations', name: '예약', icon: Calendar, path: '/reservations' },
+    { id: 'pending', name: '예약대기', icon: Clock, path: '/reservations/pending' },
+    { id: 'payments', name: '결제/수납', icon: CreditCard, path: '/payments' },
+    { id: 'refunds', name: '환불관리', icon: RotateCcw, path: '/refunds' },
+    { id: 'services', name: '서비스 관리', icon: ShoppingBag, path: '/services' },
+    { id: 'messaging', name: '메시지 관리', icon: MessageSquare, path: '/messaging' },
+    { id: 'consents', name: '동의서 관리', icon: FileText, path: '/consents' },
     { id: 'hr', name: '인사관리', icon: Users, path: '/hr' },
     { id: 'inventory', name: '재고관리', icon: Package, path: '/inventory' },
     { id: 'equipment', name: '장비관리', icon: Cpu, path: '/equipment' },
@@ -41,7 +48,14 @@ export default function Sidebar() {
         <nav className={styles.sidebarNav}>
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.path;
+            
+            // 정확히 일치하는 경로가 있는지 먼저 확인
+            const hasExactMatch = menuItems.some(otherItem => pathname === otherItem.path);
+            
+            // 정확히 일치하는 경로가 있으면 그것만 활성화, 없으면 하위 경로 체크
+            const isActive = hasExactMatch 
+              ? pathname === item.path
+              : pathname === item.path || pathname.startsWith(item.path + '/');
             
             return (
               <Link

@@ -1,0 +1,233 @@
+@import '../../../../styles/abstracts/variables';
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  background: $white;
+  flex: 1;
+  max-width: 400px;
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    color: $gray-700;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  background: $white;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: $gray-500;
+  font-size: 14px;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+    font-size: 14px;
+  }
+
+  th {
+    background: $gray-50;
+    font-weight: 600;
+    color: $gray-700;
+  }
+
+  td {
+    color: $gray-600;
+  }
+
+  tbody tr:hover {
+    background: $gray-50;
+  }
+}
+
+.empty {
+  text-align: center !important;
+  padding: 40px !important;
+  color: $gray-400;
+}
+
+.patientName {
+  font-weight: 500;
+  color: $gray-900;
+}
+
+.chartNo {
+  font-size: 12px;
+  color: $gray-500;
+  margin-top: 2px;
+}
+
+.detail {
+  font-size: 12px;
+  color: $gray-500;
+  margin-top: 2px;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.pending {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.contact_scheduled {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.contact_completed {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.converted {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.cancelled {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.contactBtn, .convertBtn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.contactBtn {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.convertBtn {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusSelect {
+  padding: 4px 8px;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+  font-size: 12px;
+  background: $white;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pageBtn {
+  padding: 8px 16px;
+  border: 1px solid $gray-300;
+  background: $white;
+  color: $gray-700;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: $gray-50;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: $gray-600;
+}
+

@@ -2,15 +2,18 @@ export interface Reservation {
   id?: string;
   date: string;
   time: string;
+  patient_id?: string;
   patient_name: string;
-  age: number;
-  gender: string;
-  phone: string;
-  treatment: string;
-  category: string;
+  age?: number;
+  gender?: string;
+  phone?: string;
+  treatment?: string;
+  category?: string;
   memo?: string;
   chart_number?: string;
-  status?: 'reservation' | 'checkin' | 'cancelled' | 'completed';
+  doctor_id?: string;
+  counselor_id?: string;
+  status?: 'reservation' | 'checkin' | 'consulting' | 'treatment' | 'completed' | 'cancelled' | 'no_show';
 }
 
 export const CATEGORIES = [

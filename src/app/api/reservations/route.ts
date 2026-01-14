@@ -7,6 +7,24 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const all = searchParams.get('all');
     const date = searchParams.get('date');
+    const patientId = searchParams.get('patient_id');
+
+    // 특정 환자의 예약 내역
+    if (patientId) {
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('date', { ascending: false })
+        .order('time', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      return NextResponse.json(data || []);
+    }
 
     // 전체 데이터 요청
     if (all === 'true') {
@@ -58,6 +76,7 @@ export async function POST(request: NextRequest) {
         {
           date: body.date,
           time: body.time,
+          patient_id: body.patient_id || null,
           patient_name: body.patient_name,
           age: body.age || 0,
           gender: body.gender || '여',
@@ -66,7 +85,7 @@ export async function POST(request: NextRequest) {
           category: body.category,
           memo: body.memo || null,
           chart_number: body.chart_number || null,
-          status: body.status || 'reservation',
+          status: body.status || 'scheduled',
         },
       ])
       .select()
@@ -94,6 +113,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
+    // 기존 예약 정보 조회 (상태 변경 확인용)
+    const { data: existingReservation } = await supabase
+      .from('reservations')
+      .select('status, patient_id, date')
+      .eq('id', id)
+      .single();
+
     const { data, error } = await supabase
       .from('reservations')
       .update({
@@ -107,6 +133,36 @@ export async function PUT(request: NextRequest) {
     if (error) {
       console.error('Supabase error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // 상태가 'completed'로 변경되었고, 환자 ID가 있으면 환자 정보 업데이트
+    const isNewlyCompleted = 
+      existingReservation?.status !== 'completed' && 
+      updateData.status === 'completed';
+    
+    const patientId = updateData.patient_id || existingReservation?.patient_id;
+
+    if (isNewlyCompleted && patientId) {
+      // 환자의 visit_count 증가 및 last_visit_date 업데이트
+      const { data: patient } = await supabase
+        .from('patients')
+        .select('visit_count')
+        .eq('id', patientId)
+        .single();
+
+      const newVisitCount = (patient?.visit_count || 0) + 1;
+      const visitDate = data.date || existingReservation?.date;
+
+      await supabase
+        .from('patients')
+        .update({
+          visit_count: newVisitCount,
+          last_visit_date: visitDate,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', patientId);
+
+      console.log(`[환자 정보 업데이트] patient_id: ${patientId}, visit_count: ${newVisitCount}, last_visit_date: ${visitDate}`);
     }
 
     return NextResponse.json(data);
@@ -139,4 +195,3 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

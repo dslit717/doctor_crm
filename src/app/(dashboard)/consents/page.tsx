@@ -1,0 +1,512 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Plus, Edit, Trash2, X, FileText, CheckCircle, XCircle, Clock } from 'lucide-react'
+import styles from './consents.module.scss'
+
+interface ConsentTemplate {
+  id: string
+  name: string
+  category: string
+  content: string
+  is_required: boolean
+  validity_days: number | null
+  version: number
+  is_active: boolean
+  created_at: string
+  updated_at: string | null
+}
+
+interface PatientConsent {
+  id: string
+  patient_id: string
+  template_id: string
+  template_version: number
+  status: 'active' | 'expired' | 'revoked'
+  signed_at: string
+  expires_at: string | null
+  revoked_at: string | null
+  patient?: {
+    id: string
+    name: string
+    chart_no: string
+  }
+  template?: {
+    id: string
+    name: string
+    category: string
+    is_required: boolean
+  }
+}
+
+const categoryLabels: Record<string, string> = {
+  personal_info: '개인정보',
+  marketing: '마케팅',
+  photography: '촬영',
+  treatment: '시술',
+  anesthesia: '마취',
+  surgery: '수술',
+  other: '기타'
+}
+
+const statusLabels: Record<string, string> = {
+  active: '유효',
+  expired: '만료',
+  revoked: '철회'
+}
+
+export default function ConsentsPage() {
+  const [activeTab, setActiveTab] = useState<'templates' | 'status'>('templates')
+  const [templates, setTemplates] = useState<ConsentTemplate[]>([])
+  const [consents, setConsents] = useState<PatientConsent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [editingTemplate, setEditingTemplate] = useState<ConsentTemplate | null>(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    category: 'other',
+    content: '',
+    is_required: false,
+    validity_days: null as number | null,
+    version: 1,
+    is_active: true
+  })
+  const [statusFilters, setStatusFilters] = useState({
+    status: '',
+    template_id: '',
+    patient_id: ''
+  })
+  const [statusPagination, setStatusPagination] = useState({
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0
+  })
+
+  useEffect(() => {
+    if (activeTab === 'templates') {
+      fetchTemplates()
+    } else {
+      fetchConsents()
+    }
+  }, [activeTab, statusFilters, statusPagination.page])
+
+  const fetchTemplates = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/consents/templates?include_inactive=true')
+      const data = await res.json()
+      if (data.success) {
+        setTemplates(data.data || [])
+      }
+    } catch (error) {
+      console.error('템플릿 조회 오류:', error)
+      alert('템플릿 목록을 불러오는데 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchConsents = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      params.append('page', String(statusPagination.page))
+      params.append('limit', String(statusPagination.limit))
+      if (statusFilters.status) params.append('status', statusFilters.status)
+      if (statusFilters.template_id) params.append('template_id', statusFilters.template_id)
+      if (statusFilters.patient_id) params.append('patient_id', statusFilters.patient_id)
+
+      const res = await fetch(`/api/consents/status?${params}`)
+      const data = await res.json()
+      if (data.success) {
+        setConsents(data.data || [])
+        setStatusPagination(data.pagination)
+      }
+    } catch (error) {
+      console.error('동의서 현황 조회 오류:', error)
+      alert('동의서 현황을 불러오는데 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmitTemplate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const url = '/api/consents/templates'
+      const method = editingTemplate ? 'PUT' : 'POST'
+      const body = editingTemplate 
+        ? { ...formData, id: editingTemplate.id }
+        : formData
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        alert(editingTemplate ? '템플릿이 수정되었습니다.' : '템플릿이 등록되었습니다.')
+        setShowTemplateModal(false)
+        resetForm()
+        fetchTemplates()
+      } else {
+        alert(data.error || '처리에 실패했습니다.')
+      }
+    } catch (error) {
+      console.error('템플릿 저장 오류:', error)
+      alert('템플릿 저장에 실패했습니다.')
+    }
+  }
+
+  const handleEdit = (template: ConsentTemplate) => {
+    setEditingTemplate(template)
+    setFormData({
+      name: template.name,
+      category: template.category,
+      content: template.content,
+      is_required: template.is_required,
+      validity_days: template.validity_days,
+      version: template.version,
+      is_active: template.is_active
+    })
+    setShowTemplateModal(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('템플릿을 비활성화하시겠습니까?')) return
+
+    try {
+      const res = await fetch(`/api/consents/templates?id=${id}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        alert('템플릿이 비활성화되었습니다.')
+        fetchTemplates()
+      } else {
+        alert(data.error || '삭제에 실패했습니다.')
+      }
+    } catch (error) {
+      console.error('템플릿 삭제 오류:', error)
+      alert('템플릿 삭제에 실패했습니다.')
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      category: 'other',
+      content: '',
+      is_required: false,
+      validity_days: null,
+      version: 1,
+      is_active: true
+    })
+    setEditingTemplate(null)
+  }
+
+  const openAddModal = () => {
+    resetForm()
+    setShowTemplateModal(true)
+  }
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>동의서 관리</h1>
+        {activeTab === 'templates' && (
+          <button className={styles.addBtn} onClick={openAddModal}>
+            <Plus size={16} />
+            템플릿 등록
+          </button>
+        )}
+      </div>
+
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === 'templates' ? styles.active : ''}`}
+          onClick={() => setActiveTab('templates')}
+        >
+          템플릿 관리
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'status' ? styles.active : ''}`}
+          onClick={() => setActiveTab('status')}
+        >
+          서명 현황
+        </button>
+      </div>
+
+      {activeTab === 'templates' ? (
+        <>
+
+          {loading ? (
+            <div className={styles.loading}>로딩 중...</div>
+          ) : (
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>템플릿명</th>
+                    <th>카테고리</th>
+                    <th>필수여부</th>
+                    <th>유효기간</th>
+                    <th>버전</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {templates.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className={styles.empty}>
+                        등록된 템플릿이 없습니다.
+                      </td>
+                    </tr>
+                  ) : (
+                    templates.map((template) => (
+                      <tr key={template.id}>
+                        <td>{template.name}</td>
+                        <td>{categoryLabels[template.category] || template.category}</td>
+                        <td>
+                          {template.is_required ? (
+                            <span className={styles.required}>필수</span>
+                          ) : (
+                            <span className={styles.optional}>선택</span>
+                          )}
+                        </td>
+                        <td>{template.validity_days ? `${template.validity_days}일` : '무제한'}</td>
+                        <td>v{template.version}</td>
+                        <td>
+                          <span className={`${styles.statusBadge} ${template.is_active ? styles.active : styles.inactive}`}>
+                            {template.is_active ? '활성' : '비활성'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className={styles.actions}>
+                            <button onClick={() => handleEdit(template)} className={styles.editBtn}>
+                              <Edit size={14} />
+                            </button>
+                            <button onClick={() => handleDelete(template.id)} className={styles.deleteBtn}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div className={styles.filters}>
+            <select
+              value={statusFilters.status}
+              onChange={(e) => setStatusFilters({ ...statusFilters, status: e.target.value })}
+              className={styles.filterSelect}
+            >
+              <option value="">전체 상태</option>
+              <option value="active">유효</option>
+              <option value="expired">만료</option>
+              <option value="revoked">철회</option>
+            </select>
+            <input
+              type="text"
+              value={statusFilters.patient_id}
+              onChange={(e) => setStatusFilters({ ...statusFilters, patient_id: e.target.value })}
+              className={styles.filterInput}
+              placeholder="환자 ID"
+            />
+            <button 
+              onClick={() => {
+                setStatusFilters({ status: '', template_id: '', patient_id: '' })
+                setStatusPagination({ ...statusPagination, page: 1 })
+              }}
+              className={styles.resetBtn}
+            >
+              초기화
+            </button>
+          </div>
+
+          {loading ? (
+            <div className={styles.loading}>로딩 중...</div>
+          ) : (
+            <>
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>서명일시</th>
+                      <th>환자명</th>
+                      <th>차트번호</th>
+                      <th>템플릿명</th>
+                      <th>카테고리</th>
+                      <th>상태</th>
+                      <th>만료일</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {consents.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className={styles.empty}>
+                          서명 이력이 없습니다.
+                        </td>
+                      </tr>
+                    ) : (
+                      consents.map((consent) => (
+                        <tr key={consent.id}>
+                          <td>{new Date(consent.signed_at).toLocaleString('ko-KR')}</td>
+                          <td>{consent.patient?.name || '-'}</td>
+                          <td>{consent.patient?.chart_no || '-'}</td>
+                          <td>{consent.template?.name || '-'}</td>
+                          <td>{consent.template ? categoryLabels[consent.template.category] || consent.template.category : '-'}</td>
+                          <td>
+                            <span className={styles[consent.status]}>
+                              {statusLabels[consent.status]}
+                            </span>
+                          </td>
+                          <td>
+                            {consent.expires_at 
+                              ? new Date(consent.expires_at).toLocaleDateString('ko-KR')
+                              : '-'}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {statusPagination.totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    disabled={statusPagination.page === 1}
+                    onClick={() => setStatusPagination({ ...statusPagination, page: statusPagination.page - 1 })}
+                  >
+                    이전
+                  </button>
+                  <span>{statusPagination.page} / {statusPagination.totalPages}</span>
+                  <button
+                    disabled={statusPagination.page === statusPagination.totalPages}
+                    onClick={() => setStatusPagination({ ...statusPagination, page: statusPagination.page + 1 })}
+                  >
+                    다음
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+
+      {showTemplateModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowTemplateModal(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>{editingTemplate ? '템플릿 수정' : '템플릿 등록'}</h2>
+              <button className={styles.closeBtn} onClick={() => setShowTemplateModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form id="template-form" onSubmit={handleSubmitTemplate}>
+              <div className={styles.modalBody}>
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>템플릿명 *</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formField}>
+                    <label>카테고리 *</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      required
+                    >
+                      {Object.entries(categoryLabels).map(([key, label]) => (
+                        <option key={key} value={key}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formField} style={{ flex: 1 }}>
+                    <label>내용 *</label>
+                    <textarea
+                      value={formData.content}
+                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      rows={10}
+                      required
+                      placeholder="동의서 내용을 입력하세요..."
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>유효기간 (일)</label>
+                    <input
+                      type="number"
+                      value={formData.validity_days || ''}
+                      onChange={(e) => setFormData({ ...formData, validity_days: e.target.value ? parseInt(e.target.value) : null })}
+                      min="1"
+                      placeholder="비워두면 무제한"
+                    />
+                  </div>
+                  <div className={styles.formField}>
+                    <label>버전</label>
+                    <input
+                      type="number"
+                      value={formData.version}
+                      onChange={(e) => setFormData({ ...formData, version: parseInt(e.target.value) || 1 })}
+                      min="1"
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.checkboxRow}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={formData.is_required}
+                      onChange={(e) => setFormData({ ...formData, is_required: e.target.checked })}
+                    />
+                    필수 동의서
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={formData.is_active}
+                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    />
+                    활성
+                  </label>
+                </div>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button type="button" onClick={() => setShowTemplateModal(false)} className={styles.btnCancel}>
+                  취소
+                </button>
+                <button type="submit" form="template-form" className={styles.btnSubmit}>
+                  {editingTemplate ? '수정' : '등록'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+

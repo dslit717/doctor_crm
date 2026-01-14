@@ -1,8 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, Search, FileText } from 'lucide-react';
 import { Reservation, CATEGORIES } from '@/lib/types';
+import ChartModal from '@/components/charts/ChartModal';
+import SatisfactionChartModal from '@/components/charts/SatisfactionChartModal';
+
+interface Patient {
+  id: string;
+  chart_no: string;
+  name: string;
+  phone: string;
+  birth_date?: string;
+  gender?: string;
+}
 
 interface ReservationModalProps {
   slot: { date: string; time: string } | null;
@@ -13,6 +24,16 @@ interface ReservationModalProps {
   onClose: () => void;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'reservation', label: '예약' },
+  { value: 'checkin', label: '접수' },
+  { value: 'consulting', label: '상담중' },
+  { value: 'treatment', label: '시술중' },
+  { value: 'completed', label: '완료' },
+  { value: 'cancelled', label: '취소' },
+  { value: 'no_show', label: '노쇼' },
+];
+
 export function ReservationModal({
   slot,
   reservation,
@@ -22,8 +43,23 @@ export function ReservationModal({
   onClose,
 }: ReservationModalProps) {
   const isEditMode = !!reservation;
+  const [showChartModal, setShowChartModal] = useState(false)
+  const [showChartMenu, setShowChartMenu] = useState(false)
+  const [chartType, setChartType] = useState<'consultation' | 'medical' | 'care' | 'satisfaction' | null>(null)
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    patient_id: string;
+    patient_name: string;
+    age: number;
+    gender: string;
+    phone: string;
+    treatment: string;
+    category: string;
+    memo: string;
+    chart_number: string;
+    status: 'reservation' | 'checkin' | 'consulting' | 'treatment' | 'completed' | 'cancelled' | 'no_show';
+  }>({
+    patient_id: reservation?.patient_id || '',
     patient_name: reservation?.patient_name || '',
     age: reservation?.age || 0,
     gender: reservation?.gender || '여',
@@ -32,7 +68,80 @@ export function ReservationModal({
     category: reservation?.category || 'treatment',
     memo: reservation?.memo || '',
     chart_number: reservation?.chart_number || '',
+    status: reservation?.status || 'reservation',
   });
+
+  // 환자 검색
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Patient[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+  const searchPatients = useCallback(async (term: string) => {
+    if (term.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/patients?search=${encodeURIComponent(term)}&limit=5`);
+      const data = await res.json();
+      if (data.success) {
+        setSearchResults(data.data || []);
+      }
+    } catch (error) {
+      console.error('환자 검색 오류:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm) {
+        searchPatients(searchTerm);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, searchPatients]);
+
+  const selectPatient = (patient: Patient) => {
+    setSelectedPatient(patient);
+    const age = patient.birth_date ? calculateAge(patient.birth_date) : 0;
+    setFormData({
+      ...formData,
+      patient_id: patient.id,
+      patient_name: patient.name,
+      phone: patient.phone,
+      chart_number: patient.chart_no,
+      gender: patient.gender === 'male' ? '남' : '여',
+      age,
+    });
+    setShowSearch(false);
+    setSearchTerm('');
+    setSearchResults([]);
+  };
+
+  const calculateAge = (birthDate: string) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const clearPatient = () => {
+    setSelectedPatient(null);
+    setFormData({
+      ...formData,
+      patient_id: '',
+      patient_name: '',
+      phone: '',
+      chart_number: '',
+      gender: '여',
+      age: 0,
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +165,56 @@ export function ReservationModal({
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="form-section">
             <h4 className="section-title">환자정보</h4>
+            
+            {/* 환자 검색 */}
+            <div className="form-row">
+              <div className="form-field full">
+                <label>환자 검색</label>
+                <div className="patient-search">
+                  {selectedPatient || formData.patient_id ? (
+                    <div className="selected-patient">
+                      <span className="chart-no">{formData.chart_number}</span>
+                      <span className="name">{formData.patient_name}</span>
+                      <span className="phone">{formData.phone}</span>
+                      <button type="button" onClick={clearPatient} className="clear-btn">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="search-input-wrap">
+                      <Search size={16} />
+                      <input
+                        type="text"
+                        placeholder="환자명 또는 전화번호로 검색..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setShowSearch(true);
+                        }}
+                        onFocus={() => setShowSearch(true)}
+                      />
+                    </div>
+                  )}
+                  {showSearch && searchResults.length > 0 && (
+                    <div className="search-results">
+                      {searchResults.map((patient) => (
+                        <div
+                          key={patient.id}
+                          className="search-item"
+                          onClick={() => selectPatient(patient)}
+                        >
+                          <span className="chart-no">{patient.chart_no}</span>
+                          <span className="name">{patient.name}</span>
+                          <span className="phone">{patient.phone}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="help-text">기존 환자 검색 또는 아래에 직접 입력</p>
+              </div>
+            </div>
+
             <div className="form-row">
               <div className="form-field">
                 <label>환자명 *</label>
@@ -113,6 +272,19 @@ export function ReservationModal({
                   required
                 />
               </div>
+              {isEditMode && (
+                <div className="form-field">
+                  <label>예약상태</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value as typeof formData.status })}
+                  >
+                    {STATUS_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -165,10 +337,131 @@ export function ReservationModal({
           </div>
 
           <div className="modal-footer">
-            {isEditMode && onDelete && (
-              <button type="button" onClick={onDelete} className="btn-delete">
-                예약취소
-              </button>
+            {isEditMode && (
+              <>
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowChartMenu(!showChartMenu)}
+                    className="btn-chart"
+                  >
+                    차트 입력
+                  </button>
+                  {showChartMenu && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '100%',
+                      left: 0,
+                      marginBottom: '8px',
+                      background: 'white',
+                      border: '1px solid #D1D5DB',
+                      borderRadius: '6px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                      zIndex: 1000,
+                      minWidth: '150px'
+                    }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChartType('consultation')
+                          setShowChartModal(true)
+                          setShowChartMenu(false)
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 16px',
+                          textAlign: 'left',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: '#374151',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                      >
+                        상담 차트
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChartType('medical')
+                          setShowChartModal(true)
+                          setShowChartMenu(false)
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 16px',
+                          textAlign: 'left',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: '#374151',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                      >
+                        진료 차트
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChartType('care')
+                          setShowChartModal(true)
+                          setShowChartMenu(false)
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 16px',
+                          textAlign: 'left',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: '#374151',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                      >
+                        관리 차트
+                      </button>
+                      <div style={{ borderTop: '1px solid #E5E7EB', margin: '4px 0' }}></div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChartType('satisfaction')
+                          setShowChartModal(true)
+                          setShowChartMenu(false)
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 16px',
+                          textAlign: 'left',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          color: '#374151',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                      >
+                        만족도 차트
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {onDelete && (
+                  <button type="button" onClick={onDelete} className="btn-delete">
+                    예약취소
+                  </button>
+                )}
+              </>
             )}
             <div className="footer-right">
               <button type="button" onClick={onClose} className="btn-cancel">
@@ -181,7 +474,41 @@ export function ReservationModal({
           </div>
         </form>
       </div>
+
+      {showChartModal && chartType && (
+        <>
+          {chartType === 'satisfaction' ? (
+            <SatisfactionChartModal
+              isOpen={showChartModal}
+              onClose={() => {
+                setShowChartModal(false)
+                setChartType(null)
+              }}
+              patientId={formData.patient_id}
+              reservationId={reservation?.id}
+              onSave={() => {
+                setShowChartModal(false)
+                setChartType(null)
+              }}
+            />
+          ) : (
+            <ChartModal
+              isOpen={showChartModal}
+              onClose={() => {
+                setShowChartModal(false)
+                setChartType(null)
+              }}
+              chartType={chartType}
+              patientId={formData.patient_id}
+              reservationId={reservation?.id}
+              onSave={() => {
+                setShowChartModal(false)
+                setChartType(null)
+              }}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
-

@@ -813,6 +813,131 @@
           }
         }
       }
+
+      // 환자 검색
+      .patient-search {
+        position: relative;
+
+        .search-input-wrap {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 12px;
+          border: 1px solid #D1D5DB;
+          border-radius: 6px;
+          background: white;
+
+          svg {
+            color: #9CA3AF;
+            flex-shrink: 0;
+          }
+
+          input {
+            flex: 1;
+            border: none;
+            padding: 0;
+            font-size: 0.875rem;
+
+            &:focus {
+              outline: none;
+              box-shadow: none;
+            }
+          }
+        }
+
+        .selected-patient {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 12px;
+          background: #F0F9FF;
+          border: 1px solid #BAE6FD;
+          border-radius: 6px;
+
+          .chart-no {
+            font-size: 0.75rem;
+            color: #0369A1;
+            font-weight: 500;
+          }
+
+          .name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1F2937;
+          }
+
+          .phone {
+            font-size: 0.8rem;
+            color: #6B7280;
+          }
+
+          .clear-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            color: #6B7280;
+
+            &:hover {
+              color: #EF4444;
+            }
+          }
+        }
+
+        .search-results {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #D1D5DB;
+          border-radius: 6px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          margin-top: 4px;
+          max-height: 200px;
+          overflow-y: auto;
+          z-index: 100;
+
+          .search-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+
+            &:hover {
+              background: #F3F4F6;
+            }
+
+            .chart-no {
+              font-size: 0.75rem;
+              color: #6B7280;
+              font-family: monospace;
+            }
+
+            .name {
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: #1F2937;
+            }
+
+            .phone {
+              font-size: 0.8rem;
+              color: #9CA3AF;
+              margin-left: auto;
+            }
+          }
+        }
+      }
+
+      .help-text {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+        margin-top: 4px;
+      }
     }
 
     .detail-section {
@@ -889,11 +1014,31 @@
     .btn-submit {
       background: #3B82F6;
       color: white;
+
+      &:hover {
+        opacity: 0.9;
+      }
     }
 
     .btn-delete {
       background: #EF4444;
       color: white;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .btn-chart {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #E3F2FD;
+      color: #1565C0;
+
+      &:hover {
+        background: #BBDEFB;
+      }
     }
   }
 }

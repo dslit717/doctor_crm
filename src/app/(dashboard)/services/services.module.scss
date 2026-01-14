@@ -1,0 +1,374 @@
+@import '../../../styles/abstracts/variables';
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: darken($primary, 8%);
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  background: $white;
+  flex: 1;
+  max-width: 400px;
+
+  input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    color: $gray-700;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  background: $white;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: $gray-600;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: $primary;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: $gray-500;
+  font-size: 14px;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+    font-size: 14px;
+  }
+
+  th {
+    background: $gray-50;
+    font-weight: 600;
+    color: $gray-700;
+  }
+
+  td {
+    color: $gray-600;
+  }
+
+  tbody tr:hover {
+    background: $gray-50;
+  }
+}
+
+.empty {
+  text-align: center !important;
+  padding: 40px !important;
+  color: $gray-400;
+}
+
+.active {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.inactive {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #ffebee;
+  color: #c62828;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.editBtn {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.deleteBtn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+// 모달
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: $white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid $gray-200;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: $gray-400;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover {
+    color: $gray-600;
+  }
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.formSection {
+  margin-bottom: 20px;
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: $gray-500;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formField {
+  flex: 1;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: $gray-700;
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.checkboxField {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  .checkboxRow {
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  min-height: 36px; // input 높이와 맞추기 (8px padding * 2 + 14px font + 여유)
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: $gray-600;
+    cursor: pointer;
+    margin-bottom: 0;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: $primary;
+    }
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 15px;
+  border-top: 1px solid $gray-200;
+}
+
+.btnCancel {
+  padding: 12px 20px;
+  background: #F3F4F6;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    background: #E5E7EB;
+  }
+}
+
+.btnSubmit {
+  padding: 12px 20px;
+  background: #3B82F6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
