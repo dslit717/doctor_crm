@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import styles from './SatisfactionChartModal.module.scss'
+import Button from '@/components/ui/Button'
+import Modal from '@/components/ui/Modal'
 
 interface SatisfactionChartModalProps {
   isOpen: boolean
@@ -157,17 +159,26 @@ export default function SatisfactionChartModal({
   if (!isOpen) return null
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2>만족도 차트 {chartId ? '수정' : '등록'}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className={styles.modalBody}>
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={`만족도 차트 ${chartId ? '수정' : '등록'}`}
+      size="md"
+      footer={
+        <>
+          <span />
+          <div className="footer-right">
+            <Button type="button" variant="secondary" size="sm" onClick={onClose}>
+              취소
+            </Button>
+            <Button type="submit" form="satisfaction-chart-form" variant="primary" size="sm" disabled={loading}>
+              {loading ? '저장 중...' : (chartId ? '수정' : '저장')}
+            </Button>
+          </div>
+        </>
+      }
+    >
+        <form id="satisfaction-chart-form" onSubmit={handleSubmit}>
             <div className={styles.section}>
               <h3>주관적 만족도 (환자 관점)</h3>
               <div className={styles.formRow}>
@@ -290,19 +301,8 @@ export default function SatisfactionChartModal({
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className={styles.modalFooter}>
-            <button type="button" onClick={onClose} className={styles.cancelBtn}>
-              취소
-            </button>
-            <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? '저장 중...' : (chartId ? '수정' : '저장')}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      </Modal>
   )
 }
 

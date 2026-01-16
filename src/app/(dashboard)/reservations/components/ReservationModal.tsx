@@ -5,6 +5,8 @@ import { X, Search, FileText } from 'lucide-react';
 import { Reservation, CATEGORIES } from '@/lib/types';
 import ChartModal from '@/components/charts/ChartModal';
 import SatisfactionChartModal from '@/components/charts/SatisfactionChartModal';
+import Button from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
 
 interface Patient {
   id: string;
@@ -155,16 +157,152 @@ export function ReservationModal({
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>{isEditMode ? '예약 상세' : '예약 추가'}</h3>
-          <button onClick={onClose} className="close-btn">
-            <X size={20} />
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="modal-body">
+    <>
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={isEditMode ? '예약 상세' : '예약 추가'}
+      size="md"
+      footer={
+        <div style={{ display: 'flex', width: '100%', gap: '12px', alignItems: 'center' }}>
+          {isEditMode && (
+            <>
+              <div style={{ position: 'relative' }}>
+                <Button
+                  type="button"
+                  variant="info"
+                  onClick={() => setShowChartMenu(!showChartMenu)}
+                >
+                  차트 입력
+                </Button>
+                {showChartMenu && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '100%',
+                    left: 0,
+                    marginBottom: '8px',
+                    background: 'white',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '6px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    zIndex: 1000,
+                    minWidth: '150px'
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChartType('consultation')
+                        setShowChartModal(true)
+                        setShowChartMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        color: '#374151',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                    >
+                      상담 차트
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChartType('medical')
+                        setShowChartModal(true)
+                        setShowChartMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        color: '#374151',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                    >
+                      진료 차트
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChartType('care')
+                        setShowChartModal(true)
+                        setShowChartMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        color: '#374151',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                    >
+                      관리 차트
+                    </button>
+                    <div style={{ borderTop: '1px solid #E5E7EB', margin: '4px 0' }}></div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChartType('satisfaction')
+                        setShowChartModal(true)
+                        setShowChartMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        color: '#374151',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                    >
+                      만족도 차트
+                    </button>
+                  </div>
+                )}
+              </div>
+              {onDelete && (
+                <Button type="button" variant="danger" onClick={onDelete}>
+                  예약취소
+                </Button>
+              )}
+            </>
+          )}
+           <div className="footer-right">
+            <Button type="button" variant="secondary" onClick={onClose}>
+              취소
+            </Button>
+            <Button type="submit" variant="primary" form="reservation-form">
+              {isEditMode ? '예약수정' : '예약등록'}
+            </Button>
+          </div>
+         </div>
+      }
+    >
+        <form id="reservation-form" onSubmit={handleSubmit}>
           <div className="form-section">
             <h4 className="section-title">환자정보</h4>
             
@@ -343,145 +481,8 @@ export function ReservationModal({
               </div>
             </div>
           </div>
-
-          <div className="modal-footer">
-            {isEditMode && (
-              <>
-                <div style={{ position: 'relative' }}>
-                  <button 
-                    type="button" 
-                    onClick={() => setShowChartMenu(!showChartMenu)}
-                    className="btn-chart"
-                  >
-                    차트 입력
-                  </button>
-                  {showChartMenu && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '100%',
-                      left: 0,
-                      marginBottom: '8px',
-                      background: 'white',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '6px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                      zIndex: 1000,
-                      minWidth: '150px'
-                    }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setChartType('consultation')
-                          setShowChartModal(true)
-                          setShowChartMenu(false)
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '10px 16px',
-                          textAlign: 'left',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '0.875rem',
-                          color: '#374151',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                      >
-                        상담 차트
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setChartType('medical')
-                          setShowChartModal(true)
-                          setShowChartMenu(false)
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '10px 16px',
-                          textAlign: 'left',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '0.875rem',
-                          color: '#374151',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                      >
-                        진료 차트
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setChartType('care')
-                          setShowChartModal(true)
-                          setShowChartMenu(false)
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '10px 16px',
-                          textAlign: 'left',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '0.875rem',
-                          color: '#374151',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                      >
-                        관리 차트
-                      </button>
-                      <div style={{ borderTop: '1px solid #E5E7EB', margin: '4px 0' }}></div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setChartType('satisfaction')
-                          setShowChartModal(true)
-                          setShowChartMenu(false)
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '10px 16px',
-                          textAlign: 'left',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '0.875rem',
-                          color: '#374151',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#F3F4F6'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                      >
-                        만족도 차트
-                      </button>
-                    </div>
-                  )}
-                </div>
-                {onDelete && (
-                  <button type="button" onClick={onDelete} className="btn-delete">
-                    예약취소
-                  </button>
-                )}
-              </>
-            )}
-            <div className="footer-right">
-              <button type="button" onClick={onClose} className="btn-cancel">
-                취소
-              </button>
-              <button type="submit" className="btn-submit">
-                {isEditMode ? '예약수정' : '예약등록'}
-              </button>
-            </div>
-          </div>
         </form>
-      </div>
+      </Modal>
 
       {showChartModal && chartType && (
         <>
@@ -506,7 +507,7 @@ export function ReservationModal({
                 setShowChartModal(false)
                 setChartType(null)
               }}
-              chartType={chartType}
+              chartType={chartType as 'consultation' | 'medical' | 'care'}
               patientId={formData.patient_id}
               reservationId={reservation?.id}
               onSave={() => {
@@ -517,6 +518,6 @@ export function ReservationModal({
           )}
         </>
       )}
-    </div>
-  );
+    </>
+  )
 }

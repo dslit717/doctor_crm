@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AlertTriangle, Clock } from 'lucide-react'
 import styles from './inventory.module.scss'
+import Button from '@/components/ui/Button'
 
 interface InventoryItem {
   id: string
@@ -153,7 +154,7 @@ export default function InventoryPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
             />
-            <button type="submit" className={styles.searchBtn}>검색</button>
+            <Button type="submit" variant="black" size="sm">검색</Button>
           </form>
           <label className={styles.checkbox}>
             <input

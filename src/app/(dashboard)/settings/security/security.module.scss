@@ -125,22 +125,6 @@
     border-left: 3px solid #f57c00;
   }
 
-  .disableBtn {
-    width: fit-content;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid #f44336;
-    color: #f44336;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-
-    &:hover {
-      background: #f44336;
-      color: white;
-    }
-  }
 }
 
 .methodGrid {
@@ -289,40 +273,7 @@
         letter-spacing: 0.5em;
       }
     }
-
-    .verifyBtn {
-      padding: 0.75rem 1.5rem;
-      background: #4a90d9;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-
-      &:hover {
-        background: #3a7bc8;
-      }
-    }
   }
 
-  .cancelBtn {
-    width: fit-content;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid $gray-200;
-    color: $gray-500;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    margin-top: 0.5rem;
-
-    &:hover {
-      border-color: $gray-500;
-      color: $gray-900;
-    }
-  }
 }
 

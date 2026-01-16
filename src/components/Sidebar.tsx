@@ -44,7 +44,7 @@ export default function Sidebar() {
       { id: 'equipment', name: '장비관리', icon: Cpu, path: '/equipment' },
     ],
     [
-      { id: 'settings', name: '설정', icon: Settings, path: '/settings/operation' },
+      { id: 'settings', name: '설정', icon: Settings, path: '/settings/hours' },
     ],
   ];
 

@@ -19,25 +19,6 @@
   }
 }
 
-.addBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
 .toolbar {
   display: flex;
   gap: 16px;
@@ -77,19 +58,7 @@
   }
 }
 
-.searchBtn {
-  padding: 8px 16px;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
+// 검색 버튼은 공통 Button 컴포넌트를 사용
 
 .filterSelect {
   padding: 8px 12px;
@@ -240,60 +209,6 @@
   }
 }
 
-// 모달 (예약 모달 스타일)
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: $white;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid $gray-200;
-
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: $gray-900;
-  }
-}
-
-.closeBtn {
-  background: none;
-  border: none;
-  color: $gray-400;
-  cursor: pointer;
-  padding: 4px;
-
-  &:hover {
-    color: $gray-600;
-  }
-}
-
-.modalBody {
-  padding: 20px;
-}
-
 .formSection {
   margin-bottom: 20px;
 
@@ -389,85 +304,4 @@
   }
 }
 
-.modalFooter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  margin-top: 20px;
-  border-top: 1px solid $gray-200;
-}
-
-.footerRight {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.btnDelete {
-  padding: 12px 20px;
-  background: #EF4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
-.btnCancel {
-  padding: 12px 20px;
-  background: #F3F4F6;
-  color: #374151;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-
-  &:hover {
-    background: #E5E7EB;
-  }
-}
-
-.btnSubmit {
-  padding: 12px 20px;
-  background: #3B82F6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
-.btnChart {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 20px;
-  background: #E3F2FD;
-  color: #1565C0;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-
-  &:hover {
-    background: #BBDEFB;
-  }
-}
-
+// 모달 하단 정렬은 공통 Modal.module.scss에서 처리

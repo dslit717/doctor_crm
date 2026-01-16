@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './ChartModal.module.scss'
+import Button from '@/components/ui/Button'
+import Modal from '@/components/ui/Modal'
 
 interface ChartModalProps {
   isOpen: boolean
@@ -121,17 +123,26 @@ export default function ChartModal({
   }
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2>{chartTypeLabels[chartType]} {chartId ? '수정' : '등록'}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className={styles.modalBody}>
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={`${chartTypeLabels[chartType]} ${chartId ? '수정' : '등록'}`}
+      size="xl"
+      footer={
+        <>
+          <span />
+          <div className="footer-right">
+            <Button type="button" variant="secondary" size="sm" onClick={onClose}>
+              취소
+            </Button>
+            <Button type="submit" form="chart-form" variant="primary" size="sm" disabled={loading}>
+              {loading ? '저장 중...' : (chartId ? '수정' : '저장')}
+            </Button>
+          </div>
+        </>
+      }
+    >
+        <form id="chart-form" onSubmit={handleSubmit}>
             {chartType === 'consultation' && (
               <>
                 <div className={styles.formRow}>
@@ -421,19 +432,8 @@ export default function ChartModal({
                 </div>
               </>
             )}
-          </div>
-
-          <div className={styles.modalFooter}>
-            <button type="button" onClick={onClose} className={styles.cancelBtn}>
-              취소
-            </button>
-            <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? '저장 중...' : (chartId ? '수정' : '저장')}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      </Modal>
   )
 }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './security.module.scss'
+import Button from '@/components/ui/Button'
 
 type TwoFaMethod = 'otp' | 'sms' | null
 
@@ -181,9 +182,9 @@ export default function SecuritySettingsPage() {
               <p>인증 방식: <strong>{getMethodLabel(twoFaStatus.method)}</strong></p>
               <p>설정일: {new Date(twoFaStatus.created_at).toLocaleDateString('ko-KR')}</p>
             </div>
-            <button onClick={disableTwoFa} className={styles.disableBtn}>
+            <Button variant="danger" size="sm" onClick={disableTwoFa}>
               비활성화
-            </button>
+            </Button>
           </div>
         ) : (
           <div className={styles.statusCard}>
@@ -254,14 +255,14 @@ export default function SecuritySettingsPage() {
                 placeholder="000000"
                 maxLength={6}
               />
-              <button onClick={verifyTotpSetup} className={styles.verifyBtn}>
+              <Button variant="primary" size="sm" onClick={verifyTotpSetup}>
                 확인
-              </button>
+              </Button>
             </div>
 
-            <button onClick={cancelSetup} className={styles.cancelBtn}>
+            <Button variant="secondary" size="sm" onClick={cancelSetup}>
               취소
-            </button>
+            </Button>
           </div>
         </section>
       )}

@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Edit, Trash2, X, FileText, CheckCircle, XCircle, Clock } from 'lucide-react'
 import styles from './consents.module.scss'
+import Button from '@/components/ui/Button'
+import ConsentTemplateModal from './components/ConsentTemplateModal'
 
 interface ConsentTemplate {
   id: string
@@ -216,10 +218,10 @@ export default function ConsentsPage() {
       <div className={styles.header}>
         <h1>동의서 관리</h1>
         {activeTab === 'templates' && (
-          <button className={styles.addBtn} onClick={openAddModal}>
+          <Button variant="black" onClick={openAddModal}>
             <Plus size={16} />
             템플릿 등록
-          </button>
+          </Button>
         )}
       </div>
 
@@ -285,12 +287,12 @@ export default function ConsentsPage() {
                         </td>
                         <td>
                           <div className={styles.actions}>
-                            <button onClick={() => handleEdit(template)} className={styles.editBtn}>
-                              <Edit size={14} />
-                            </button>
-                            <button onClick={() => handleDelete(template.id)} className={styles.deleteBtn}>
-                              <Trash2 size={14} />
-                            </button>
+                            <Button type="button" variant="info" size="sm" onClick={() => handleEdit(template)}>
+                              수정
+                            </Button>
+                            <Button type="button" variant="danger" size="sm" onClick={() => handleDelete(template.id)}>
+                              삭제
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -404,107 +406,16 @@ export default function ConsentsPage() {
       )}
 
       {showTemplateModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowTemplateModal(false)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{editingTemplate ? '템플릿 수정' : '템플릿 등록'}</h2>
-              <button className={styles.closeBtn} onClick={() => setShowTemplateModal(false)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <form id="template-form" onSubmit={handleSubmitTemplate}>
-              <div className={styles.modalBody}>
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label>템플릿명 *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className={styles.formField}>
-                    <label>카테고리 *</label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      required
-                    >
-                      {Object.entries(categoryLabels).map(([key, label]) => (
-                        <option key={key} value={key}>{label}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formField} style={{ flex: 1 }}>
-                    <label>내용 *</label>
-                    <textarea
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      rows={10}
-                      required
-                      placeholder="동의서 내용을 입력하세요..."
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label>유효기간 (일)</label>
-                    <input
-                      type="number"
-                      value={formData.validity_days || ''}
-                      onChange={(e) => setFormData({ ...formData, validity_days: e.target.value ? parseInt(e.target.value) : null })}
-                      min="1"
-                      placeholder="비워두면 무제한"
-                    />
-                  </div>
-                  <div className={styles.formField}>
-                    <label>버전</label>
-                    <input
-                      type="number"
-                      value={formData.version}
-                      onChange={(e) => setFormData({ ...formData, version: parseInt(e.target.value) || 1 })}
-                      min="1"
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.checkboxRow}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.is_required}
-                      onChange={(e) => setFormData({ ...formData, is_required: e.target.checked })}
-                    />
-                    필수 동의서
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.is_active}
-                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    />
-                    활성
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.modalFooter}>
-                <button type="button" onClick={() => setShowTemplateModal(false)} className={styles.btnCancel}>
-                  취소
-                </button>
-                <button type="submit" form="template-form" className={styles.btnSubmit}>
-                  {editingTemplate ? '수정' : '등록'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <ConsentTemplateModal
+          isOpen
+          onClose={() => setShowTemplateModal(false)}
+          title={editingTemplate ? '템플릿 수정' : '템플릿 등록'}
+          categoryOptions={Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmitTemplate}
+          submitText={editingTemplate ? '수정' : '등록'}
+        />
       )}
     </div>
   )

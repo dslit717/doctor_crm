@@ -1,0 +1,215 @@
+@import '../../../../styles/abstracts/variables';
+
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .chartTypeSelect {
+    padding: 8px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    font-size: 14px;
+    background: $white;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: $gray-500;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: $gray-400;
+  font-size: 16px;
+}
+
+.tableWrapper {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: $gray-50;
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: $gray-700;
+      border-bottom: 1px solid $gray-200;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $gray-100;
+      transition: background 0.2s;
+
+      &:hover {
+        background: $gray-50;
+        cursor: pointer;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 14px 16px;
+      font-size: 14px;
+      color: $gray-700;
+    }
+  }
+}
+
+.tableRow {
+  cursor: pointer;
+}
+
+.fieldNameCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldName {
+  font-weight: 500;
+  color: $gray-900;
+}
+
+.helpText {
+  font-size: 12px;
+  color: $gray-500;
+}
+
+.fieldKey {
+  background: $gray-100;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: $gray-700;
+}
+
+.badgeRequired,
+.badgeOptional,
+.badgeYes,
+.badgeNo {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badgeRequired {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badgeOptional {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.badgeYes {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.badgeNo {
+  background: $gray-100;
+  color: $gray-600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    input[type="checkbox"] {
+      width: auto;
+    }
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 8px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    font-family: monospace;
+  }
+
+  small {
+    font-size: 12px;
+    color: $gray-500;
+    margin-top: -4px;
+  }
+}
+
+

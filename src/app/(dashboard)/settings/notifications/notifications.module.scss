@@ -1,4 +1,4 @@
-@import '../../../../styles/abstracts/variables';
+@use '../../../../styles/abstracts/variables' as *;
 
 .container {
   padding: 24px;
@@ -16,30 +16,7 @@
     font-size: 24px;
     font-weight: 600;
     color: $gray-900;
-  }
-}
-
-.saveBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: $primary;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover:not(:disabled) {
-    background: darken($primary, 8%);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    margin: 0;
   }
 }
 
@@ -52,37 +29,32 @@
 .settingsList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .settingCard {
   border: 1px solid $gray-200;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 10px;
   background: $white;
+  overflow: hidden;
 }
 
 .settingHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid $gray-100;
 }
 
 .settingTitle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: $gray-900;
-  }
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-900;
 }
 
 .toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
@@ -97,14 +69,14 @@
 }
 
 .settingBody {
-  padding-top: 16px;
-  border-top: 1px solid $gray-200;
+  padding: 12px 16px;
+  background: $gray-50;
 }
 
 .formRow {
   display: flex;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
   &:last-child {
     margin-bottom: 0;
@@ -116,44 +88,26 @@
 
   label {
     display: block;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: $gray-700;
     margin-bottom: 6px;
   }
 
-  input, select {
+  input,
+  select,
+  textarea {
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 10px;
     border: 1px solid $gray-300;
-    border-radius: 4px;
+    border-radius: 6px;
+    background: $white;
     font-size: 14px;
 
     &:focus {
       outline: none;
       border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
   }
 }
-
-.infoBox {
-  margin-top: 32px;
-  padding: 16px;
-  background: $gray-50;
-  border-radius: 8px;
-
-  p {
-    font-size: 13px;
-    color: $gray-600;
-    margin: 4px 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-

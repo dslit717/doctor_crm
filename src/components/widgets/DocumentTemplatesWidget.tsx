@@ -1,6 +1,7 @@
 import React from 'react';
 import { WidgetCard } from './WidgetCard';
 import styles from './widgets.module.scss';
+import Button from '@/components/ui/Button';
 
 interface DocumentTemplatesWidgetProps {
   isEditing?: boolean;
@@ -19,7 +20,13 @@ export function DocumentTemplatesWidget({ isEditing, onRemove }: DocumentTemplat
     <WidgetCard title="문서 템플릿" isEditing={isEditing} onRemove={onRemove}>
       <div className={styles.templateList}>
         {templates.map((template, idx) => (
-          <button key={idx} className={styles.templateButton}>
+          <Button
+            key={idx}
+            type="button"
+            variant="ghost"
+            size="md"
+            className={styles.templateButton}
+          >
             <div className={styles.templateInfo}>
               <span className={styles.templateIcon}>{template.icon}</span>
               <span className={styles.templateName}>
@@ -29,7 +36,7 @@ export function DocumentTemplatesWidget({ isEditing, onRemove }: DocumentTemplat
             <span className={styles.templateUsage}>
               {template.used}회
             </span>
-          </button>
+          </Button>
         ))}
       </div>
     </WidgetCard>

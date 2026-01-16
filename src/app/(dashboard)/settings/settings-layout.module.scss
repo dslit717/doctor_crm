@@ -1,4 +1,4 @@
-@import '../../../../styles/abstracts/variables';
+@import '../../../styles/abstracts/variables';
 
 .container {
   padding: 24px;
@@ -14,15 +14,6 @@
     font-weight: 600;
     color: $gray-900;
   }
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: $gray-500;
-  font-size: 14px;
 }
 
 .tabs {
@@ -56,49 +47,63 @@
   }
 }
 
-.section {
-  background: $white;
-  border: 1px solid $gray-200;
-  border-radius: 8px;
-  padding: 24px;
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: $gray-500;
+  font-size: 14px;
+}
 
+.section {
   h3 {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
-    color: $gray-700;
-    margin: 0 0 12px 0;
+    color: $gray-900;
+    margin: 0 0 16px 0;
 
     &:not(:first-child) {
-      margin-top: 24px;
+      margin-top: 32px;
     }
   }
 }
 
+// 진료시간
 .timeRow {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-}
+  margin-bottom: 24px;
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 120px;
+    flex: 0 0 auto;
 
-  label {
-    font-size: 12px;
-    color: $gray-500;
-  }
+    label {
+      font-size: 12px;
+      font-weight: 500;
+      color: $gray-700;
+      margin-bottom: 4px;
+    }
 
-  input[type="time"] {
-    padding: 8px 12px;
-    border: 1px solid $gray-300;
-    border-radius: 6px;
-    font-size: 14px;
+    input[type='time'] {
+      padding: 8px 12px;
+      border: 1px solid $gray-300;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100%;
+      background: $white;
+      box-sizing: border-box;
 
-    &:focus {
-      outline: none;
-      border-color: $primary;
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
     }
   }
 }
@@ -120,20 +125,8 @@
   }
 }
 
-.saveBtn {
-  margin-top: 24px;
-  padding: 10px 24px;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
+.businessHoursSaveBtn {
+  margin-top: 40px;
 }
 
 // 휴무일 관리
@@ -165,23 +158,6 @@
   &:focus {
     outline: none;
     border-color: $primary;
-  }
-}
-
-.addBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
   }
 }
 
@@ -239,19 +215,6 @@
       color: #ef6c00;
     }
   }
-
-  .deleteBtn {
-    padding: 6px;
-    background: none;
-    border: none;
-    color: $gray-400;
-    cursor: pointer;
-    border-radius: 4px;
-
-    &:hover {
-      background: $gray-200;
-      color: #c62828;
-    }
-  }
 }
+
 

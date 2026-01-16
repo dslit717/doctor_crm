@@ -3,36 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Plus, Edit, Trash2, X, Send, History, FileText } from 'lucide-react'
 import styles from './messaging.module.scss'
-
-interface MessageTemplate {
-  id: string
-  name: string
-  template_code: string
-  category: string | null
-  channel: 'sms' | 'lms' | 'mms'
-  content: string
-  variables: Record<string, unknown> | null
-  is_active: boolean
-  created_at: string
-  updated_at: string | null
-}
-
-interface NotificationLog {
-  id: string
-  patient_id: string | null
-  notification_type: string
-  channel: string
-  recipient: string
-  content: string
-  status: 'sent' | 'failed'
-  sent_at: string
-  error_message: string | null
-  patient?: {
-    id: string
-    name: string
-    phone: string
-  }
-}
+import Button from '@/components/ui/Button'
+import MessageTemplateModal from './components/MessageTemplateModal'
+import type { MessageTemplate, MessageTemplateFormData, NotificationLog } from './types'
 
 const categoryLabels: Record<string, string> = {
   reservation: '예약',
@@ -61,11 +34,11 @@ export default function MessagingPage() {
   const [loading, setLoading] = useState(true)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MessageTemplateFormData>({
     name: '',
     template_code: '',
     category: 'other',
-    channel: 'sms' as 'sms' | 'lms' | 'mms',
+    channel: 'sms',
     content: '',
     is_active: true
   })
@@ -214,10 +187,10 @@ export default function MessagingPage() {
       <div className={styles.header}>
         <h1>메시지 관리</h1>
         {activeTab === 'templates' && (
-          <button className={styles.addBtn} onClick={openAddModal}>
+          <Button variant="black" onClick={openAddModal}>
             <Plus size={16} />
             템플릿 등록
-          </button>
+          </Button>
         )}
       </div>
 
@@ -281,12 +254,12 @@ export default function MessagingPage() {
                         </td>
                         <td>
                           <div className={styles.actions}>
-                            <button onClick={() => handleEdit(template)} className={styles.editBtn}>
-                              <Edit size={14} />
-                            </button>
-                            <button onClick={() => handleDelete(template.id)} className={styles.deleteBtn}>
-                              <Trash2 size={14} />
-                            </button>
+                            <Button type="button" variant="info" size="sm" onClick={() => handleEdit(template)}>
+                              수정
+                            </Button>
+                            <Button type="button" variant="danger" size="sm" onClick={() => handleDelete(template.id)}>
+                              삭제
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -414,105 +387,16 @@ export default function MessagingPage() {
       )}
 
       {showTemplateModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowTemplateModal(false)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{editingTemplate ? '템플릿 수정' : '템플릿 등록'}</h2>
-              <button className={styles.closeBtn} onClick={() => setShowTemplateModal(false)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <form id="template-form" onSubmit={handleSubmitTemplate}>
-              <div className={styles.modalBody}>
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label>템플릿명 *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className={styles.formField}>
-                    <label>템플릿 코드 *</label>
-                    <input
-                      type="text"
-                      value={formData.template_code}
-                      onChange={(e) => setFormData({ ...formData, template_code: e.target.value })}
-                      required
-                      placeholder="예: RESERVATION_REMINDER"
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label>카테고리 *</label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      required
-                    >
-                      {Object.entries(categoryLabels).map(([key, label]) => (
-                        <option key={key} value={key}>{label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className={styles.formField}>
-                    <label>채널 *</label>
-                    <select
-                      value={formData.channel}
-                      onChange={(e) => setFormData({ ...formData, channel: e.target.value as 'sms' | 'lms' | 'mms' })}
-                      required
-                    >
-                      <option value="sms">SMS</option>
-                      <option value="lms">LMS</option>
-                      <option value="mms">MMS</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formField} style={{ flex: 1 }}>
-                    <label>내용 *</label>
-                    <textarea
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      rows={6}
-                      required
-                      placeholder="변수는 #{변수명} 형식으로 입력하세요. 예: #{이름}님, 예약이 확정되었습니다."
-                    />
-                    <div className={styles.helpText}>
-                      변수 예시: {'#{이름}'}, {'#{예약일시}'}, {'#{시술명}'}, {'#{담당자}'}
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.checkboxRow}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.is_active}
-                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    />
-                    활성
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.modalFooter}>
-                <button type="button" onClick={() => setShowTemplateModal(false)} className={styles.btnCancel}>
-                  취소
-                </button>
-                <button type="submit" form="template-form" className={styles.btnSubmit}>
-                  {editingTemplate ? '수정' : '등록'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <MessageTemplateModal
+          isOpen
+          onClose={() => setShowTemplateModal(false)}
+          title={editingTemplate ? '템플릿 수정' : '템플릿 등록'}
+          categoryOptions={Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmitTemplate}
+          submitText={editingTemplate ? '수정' : '등록'}
+        />
       )}
     </div>
   )
