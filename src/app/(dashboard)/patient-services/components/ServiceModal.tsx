@@ -172,7 +172,7 @@ export default function ServiceModal({
     >
       <form id="service-form" onSubmit={handleSubmit}>
         <div className={styles.formSection}>
-          <p>환자 선택</p>
+          <p>환자 검색</p>
           {isEditMode ? (
             <div className={styles.selectedItem}>
               <div>
@@ -232,6 +232,7 @@ export default function ServiceModal({
         </div>
 
         <div className={styles.formSection}>
+          <p>서비스명 검색</p>
           {!isEditMode && (
             <div className={styles.searchWrapper}>
               <div className={styles.patientSearch}>

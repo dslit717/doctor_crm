@@ -229,7 +229,7 @@ export default function PaymentModal({
       <form id="payment-form" onSubmit={handleSubmit}>
         {/* 환자 선택 */}
         <div className={styles.formSection}>
-          <h4>환자 정보</h4>
+          <h4>환자 검색</h4>
           {isViewMode ? (
             <div className={styles.patientSelected}>
               <span>{payment?.patient?.name}</span>
