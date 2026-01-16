@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './refunds.module.scss'
+import { apiCall } from '@/lib/api'
 
 interface Refund {
   id: string
@@ -74,22 +75,17 @@ export default function RefundsPage() {
       params.append('page', pagination.page.toString())
       params.append('limit', pagination.limit.toString())
 
-      const res = await fetch(`/api/refunds?${params}`)
-      const data = await res.json()
-      
-      if (data.success) {
-        setRefunds(data.data || [])
-        if (data.pagination) {
+      const result = await apiCall<{ data: Refund[]; pagination: typeof pagination }>(`/api/refunds?${params}`)
+      if (result.success && result.data) {
+        setRefunds(result.data.data || [])
+        if (result.data?.pagination) {
           setPagination(prev => ({
             ...prev,
-            total: data.pagination.total,
-            totalPages: data.pagination.totalPages
+            total: result.data!.pagination.total,
+            totalPages: result.data!.pagination.totalPages
           }))
         }
       }
-    } catch (error) {
-      console.error('환불 목록 조회 오류:', error)
-      alert('환불 목록을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -103,27 +99,18 @@ export default function RefundsPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/refunds', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          action: 'approve',
-          approved_by: user.employee.id
-        })
+    const result = await apiCall('/api/refunds', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id,
+        action: 'approve',
+        approved_by: user.employee.id
       })
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert('환불이 승인되었습니다.')
-        fetchRefunds()
-      } else {
-        alert(data.error || '승인에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('환불 승인 오류:', error)
-      alert('환불 승인에 실패했습니다.')
+    if (result.success) {
+      alert('환불이 승인되었습니다.')
+      fetchRefunds()
     }
   }
 
@@ -135,27 +122,18 @@ export default function RefundsPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/refunds', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          action: 'reject',
-          approved_by: user.employee.id
-        })
+    const result = await apiCall('/api/refunds', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id,
+        action: 'reject',
+        approved_by: user.employee.id
       })
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert('환불이 거절되었습니다.')
-        fetchRefunds()
-      } else {
-        alert(data.error || '거절에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('환불 거절 오류:', error)
-      alert('환불 거절에 실패했습니다.')
+    if (result.success) {
+      alert('환불이 거절되었습니다.')
+      fetchRefunds()
     }
   }
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import styles from '../settings-layout.module.scss'
 import Button from '@/components/ui/Button'
+import { apiCall } from '@/lib/api'
 
 interface BusinessHours {
   weekday: { open: string; close: string; lunch_start: string; lunch_end: string }
@@ -33,14 +34,10 @@ export default function SettingsHoursPage() {
   const fetchHours = useCallback(async () => {
     setLoading(true)
     try {
-      const hoursRes = await fetch('/api/settings/operation?key=business_hours')
-      const hoursData = await hoursRes.json()
-      if (hoursData.success && hoursData.data?.setting_value) {
-        setBusinessHours(hoursData.data.setting_value)
+      const result = await apiCall<{ data: { setting_value: BusinessHours } }>('/api/settings/operation?key=business_hours')
+      if (result.success && result.data?.data?.setting_value) {
+        setBusinessHours(result.data.data.setting_value)
       }
-    } catch (error) {
-      console.error('운영 시간 조회 오류:', error)
-      alert('운영 시간을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -51,23 +48,15 @@ export default function SettingsHoursPage() {
   }, [fetchHours])
 
   const saveBusinessHours = async () => {
-    try {
-      const res = await fetch('/api/settings/operation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          setting_key: 'business_hours',
-          setting_value: businessHours
-        })
+    const result = await apiCall('/api/settings/operation', {
+      method: 'POST',
+      body: JSON.stringify({
+        setting_key: 'business_hours',
+        setting_value: businessHours
       })
-      if (res.ok) {
-        alert('저장되었습니다.')
-      } else {
-        alert('저장 실패')
-      }
-    } catch (error) {
-      console.error('Save error:', error)
-      alert('저장 실패')
+    })
+    if (result.success) {
+      alert('저장되었습니다.')
     }
   }
 

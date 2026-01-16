@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search, Phone, CheckCircle } from 'lucide-react'
 import styles from './pending.module.scss'
 import type { PendingReservation } from './types'
+import { apiCall } from '@/lib/api'
 
 const statusLabels: Record<string, string> = {
   pending: '대기중',
@@ -46,22 +47,17 @@ export default function PendingReservationsPage() {
       params.append('page', pagination.page.toString())
       params.append('limit', pagination.limit.toString())
 
-      const res = await fetch(`/api/reservations/pending?${params}`)
-      const data = await res.json()
-      
-      if (data.success) {
-        setPendings(data.data || [])
-        if (data.pagination) {
+      const result = await apiCall<{ data: PendingReservation[]; pagination: typeof pagination }>(`/api/reservations/pending?${params}`)
+      if (result.success && result.data) {
+        setPendings(result.data.data || [])
+        if (result.data.pagination) {
           setPagination(prev => ({
             ...prev,
-            total: data.pagination.total,
-            totalPages: data.pagination.totalPages
+            total: result.data!.pagination.total,
+            totalPages: result.data!.pagination.totalPages
           }))
         }
       }
-    } catch (error) {
-      console.error('대기 목록 조회 오류:', error)
-      alert('대기 목록을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -85,53 +81,35 @@ export default function PendingReservationsPage() {
 
     if (!method || !content) return
 
-    try {
-      const res = await fetch('/api/reservations/pending', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: pendingId,
-          contact_log: {
-            method,
-            content,
-            result: result || undefined
-          }
-        })
+    const apiResult = await apiCall('/api/reservations/pending', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id: pendingId,
+        contact_log: {
+          method,
+          content,
+          result: result || undefined
+        }
       })
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert('연락 이력이 추가되었습니다.')
-        fetchPendings()
-      } else {
-        alert(data.error || '연락 이력 추가에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('연락 이력 추가 오류:', error)
-      alert('연락 이력 추가에 실패했습니다.')
+    if (apiResult.success) {
+      alert('연락 이력이 추가되었습니다.')
+      fetchPendings()
     }
   }
 
   const handleStatusChange = async (id: string, newStatus: string) => {
-    try {
-      const res = await fetch('/api/reservations/pending', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          status: newStatus
-        })
+    const result = await apiCall('/api/reservations/pending', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id,
+        status: newStatus
       })
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        fetchPendings()
-      } else {
-        alert(data.error || '상태 변경에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('상태 변경 오류:', error)
-      alert('상태 변경에 실패했습니다.')
+    if (result.success) {
+      fetchPendings()
     }
   }
 

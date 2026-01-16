@@ -1,10 +1,5 @@
-@use '../../../../styles/abstracts/variables' as *;
-
-.container {
-  padding: 24px;
-  background: $white;
-  min-height: calc(100vh - 48px);
-}
+@import '../../../../styles/abstracts/variables';
+@import '../../../../styles/layouts/page-container';
 
 .header {
   display: flex;

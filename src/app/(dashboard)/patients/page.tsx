@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, Plus, X, FileText } from 'lucide-react'
 import styles from './patients.module.scss'
 import Button from '@/components/ui/Button'
 import PatientModal from './components/PatientModal'
 import type { Patient, Pagination } from './types'
+import { apiCall } from '@/lib/api'
 
 const genderLabels: Record<string, string> = {
   male: '남',
@@ -38,11 +39,7 @@ export default function PatientsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null)
 
-  useEffect(() => {
-    fetchPatients()
-  }, [pagination.page, statusFilter])
-
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -51,24 +48,25 @@ export default function PatientsPage() {
       if (searchTerm) params.append('search', searchTerm)
       if (statusFilter) params.append('status', statusFilter)
 
-      const res = await fetch(`/api/patients?${params}`)
-      const data = await res.json()
-      
-      if (data.success) {
-        setPatients(data.data || [])
-        setPagination(data.pagination)
+      const result = await apiCall<Patient[]>(`/api/patients?${params}`)
+      if (result.success && result.data) {
+        setPatients(result.data || [])
+        if (result.pagination) {
+          setPagination(result.pagination)
+        }
       }
-    } catch (error) {
-      console.error('환자 목록 조회 오류:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagination.page, pagination.limit, searchTerm, statusFilter])
+
+  useEffect(() => {
+    fetchPatients()
+  }, [fetchPatients])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setPagination(prev => ({ ...prev, page: 1 }))
-    fetchPatients()
   }
 
   const handleAddPatient = () => {
@@ -82,42 +80,31 @@ export default function PatientsPage() {
   }
 
   const handleSavePatient = async (formData: Record<string, unknown>) => {
-    try {
-      const method = editingPatient ? 'PUT' : 'POST'
-      const body = editingPatient ? { ...formData, id: editingPatient.id } : formData
+    const method = editingPatient ? 'PUT' : 'POST'
+    const body = editingPatient ? { ...formData, id: editingPatient.id } : formData
 
-      const res = await fetch('/api/patients', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
+    const result = await apiCall('/api/patients', {
+      method,
+      body: JSON.stringify(body)
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        setShowModal(false)
-        fetchPatients()
-      } else {
-        alert(data.error || '저장에 실패했습니다.')
+    if (result.success) {
+      setShowModal(false)
+      if (!editingPatient) {
+        setSearchTerm('')
+        setStatusFilter('')
+        setPagination(prev => ({ ...prev, page: 1 }))
       }
-    } catch (error) {
-      console.error('환자 저장 오류:', error)
-      alert('저장에 실패했습니다.')
+      // 등록/수정 후 목록 새로고침
+      fetchPatients()
     }
   }
 
   const handleDeletePatient = async (id: string) => {
-    try {
-      const res = await fetch(`/api/patients?id=${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.success) {
-        setShowModal(false)
-        fetchPatients()
-      } else {
-        alert(data.error || '삭제에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('환자 삭제 오류:', error)
-      alert('삭제에 실패했습니다.')
+    const result = await apiCall(`/api/patients?id=${id}`, { method: 'DELETE' })
+    if (result.success) {
+      setShowModal(false)
+      fetchPatients()
     }
   }
 
@@ -225,7 +212,7 @@ export default function PatientsPage() {
             </table>
           </div>
 
-          {pagination.totalPages > 1 && (
+          {pagination?.totalPages && pagination.totalPages > 1 && (
             <div className={styles.pagination}>
               <button
                 disabled={pagination.page === 1}

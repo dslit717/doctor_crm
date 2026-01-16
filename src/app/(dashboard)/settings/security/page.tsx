@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './security.module.scss'
 import Button from '@/components/ui/Button'
+import { apiCall } from '@/lib/api'
 
 type TwoFaMethod = 'otp' | 'sms' | null
 
@@ -32,13 +33,10 @@ export default function SecuritySettingsPage() {
 
   const fetchTwoFaStatus = async () => {
     try {
-      const res = await fetch(`/api/auth/2fa/setup?employeeId=${user?.employee?.id}`)
-      const data = await res.json()
-      if (data.success) {
-        setTwoFaStatus(data.twoFa)
+      const result = await apiCall<{ twoFa: TwoFaStatus }>(`/api/auth/2fa/setup?employeeId=${user?.employee?.id}`)
+      if (result.success && result.data) {
+        setTwoFaStatus(result.data.twoFa)
       }
-    } catch (error) {
-      console.error('Failed to fetch 2FA status:', error)
     } finally {
       setIsLoading(false)
     }
@@ -50,34 +48,26 @@ export default function SecuritySettingsPage() {
     setMessage(null)
     setSetupMode(method)
 
-    try {
-      const res = await fetch('/api/auth/2fa/setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          employeeId: user?.employee?.id,
-          method,
-        }),
-      })
+    const result = await apiCall<{ qrCode?: string; secret?: string; message?: string }>('/api/auth/2fa/setup', {
+      method: 'POST',
+      body: JSON.stringify({
+        employeeId: user?.employee?.id,
+        method,
+      }),
+    })
 
-      const data = await res.json()
-
-      if (data.success) {
-        if (method === 'otp') {
-          setQrCode(data.qrCode)
-          setSecretKey(data.secret)
-        } else {
-          // SMS는 바로 활성화
-          setMessage({ type: 'success', text: data.message })
-          setSetupMode(null)
-          fetchTwoFaStatus()
-        }
+    if (result.success && result.data) {
+      if (method === 'otp' && result.data.qrCode && result.data.secret) {
+        setQrCode(result.data.qrCode)
+        setSecretKey(result.data.secret)
       } else {
-        setMessage({ type: 'error', text: data.error })
+        // SMS는 바로 활성화
+        setMessage({ type: 'success', text: result.data.message || '설정이 완료되었습니다.' })
         setSetupMode(null)
+        fetchTwoFaStatus()
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: '설정 중 오류가 발생했습니다.' })
+    } else {
+      setMessage({ type: 'error', text: result.error || '설정 중 오류가 발생했습니다.' })
       setSetupMode(null)
     }
   }
@@ -89,30 +79,23 @@ export default function SecuritySettingsPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/auth/2fa/verify-setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          employeeId: user?.employee?.id,
-          code: verifyCode,
-        }),
-      })
+    const result = await apiCall<{ message?: string }>('/api/auth/2fa/verify-setup', {
+      method: 'POST',
+      body: JSON.stringify({
+        employeeId: user?.employee?.id,
+        code: verifyCode,
+      }),
+    })
 
-      const data = await res.json()
-
-      if (data.success) {
-        setMessage({ type: 'success', text: data.message })
-        setSetupMode(null)
-        setQrCode('')
-        setSecretKey('')
-        setVerifyCode('')
-        fetchTwoFaStatus()
-      } else {
-        setMessage({ type: 'error', text: data.error })
-      }
-    } catch (error) {
-      setMessage({ type: 'error', text: '검증 중 오류가 발생했습니다.' })
+    if (result.success && result.data) {
+      setMessage({ type: 'success', text: result.data.message || '인증이 완료되었습니다.' })
+      setSetupMode(null)
+      setQrCode('')
+      setSecretKey('')
+      setVerifyCode('')
+      fetchTwoFaStatus()
+    } else {
+      setMessage({ type: 'error', text: result.error || '검증 중 오류가 발생했습니다.' })
     }
   }
 
@@ -122,25 +105,18 @@ export default function SecuritySettingsPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/auth/2fa/disable', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          employeeId: user?.employee?.id,
-        }),
-      })
+    const result = await apiCall<{ message?: string }>('/api/auth/2fa/disable', {
+      method: 'POST',
+      body: JSON.stringify({
+        employeeId: user?.employee?.id,
+      }),
+    })
 
-      const data = await res.json()
-
-      if (data.success) {
-        setMessage({ type: 'success', text: data.message })
-        setTwoFaStatus(null)
-      } else {
-        setMessage({ type: 'error', text: data.error })
-      }
-    } catch (error) {
-      setMessage({ type: 'error', text: '비활성화 중 오류가 발생했습니다.' })
+    if (result.success && result.data) {
+      setMessage({ type: 'success', text: result.data.message || '비활성화되었습니다.' })
+      setTwoFaStatus(null)
+    } else {
+      setMessage({ type: 'error', text: result.error || '비활성화 중 오류가 발생했습니다.' })
     }
   }
 

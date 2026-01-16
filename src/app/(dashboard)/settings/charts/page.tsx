@@ -7,6 +7,7 @@ import layoutStyles from '../settings-layout.module.scss'
 import styles from './chart-fields.module.scss'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
+import { apiCall } from '@/lib/api'
 
 export default function SettingsChartsPage() {
   const router = useRouter()
@@ -88,14 +89,10 @@ export default function SettingsChartsPage() {
 
     setLoading(true)
     try {
-      const res = await fetch(`/api/chart-fields?chart_type=${selectedChartType}&is_active=true`)
-      const data = await res.json()
-      if (data.success) {
-        setFields(data.data || [])
+      const result = await apiCall(`/api/chart-fields?chart_type=${selectedChartType}&is_active=true`)
+      if (result.success && result.data) {
+        setFields(result.data)
       }
-    } catch (error) {
-      console.error('필드 조회 오류:', error)
-      alert('필드를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -135,18 +132,10 @@ export default function SettingsChartsPage() {
   const handleDeleteField = async (id: string) => {
     if (!confirm('이 필드를 삭제하시겠습니까?')) return
 
-    try {
-      const res = await fetch(`/api/chart-fields?id=${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.success) {
-        alert('필드가 삭제되었습니다.')
-        fetchFields()
-      } else {
-        alert(data.error || '삭제에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('필드 삭제 오류:', error)
-      alert('삭제에 실패했습니다.')
+    const result = await apiCall(`/api/chart-fields?id=${id}`, { method: 'DELETE' })
+    if (result.success) {
+      alert('필드가 삭제되었습니다.')
+      fetchFields()
     }
   }
 
@@ -164,31 +153,22 @@ export default function SettingsChartsPage() {
       return
     }
 
-    try {
-      const url = '/api/chart-fields'
-      const method = editingField ? 'PUT' : 'POST'
-      const body = {
-        ...(editingField && { id: editingField.id }),
-        ...formData
-      }
+    const url = '/api/chart-fields'
+    const method = editingField ? 'PUT' : 'POST'
+    const body = {
+      ...(editingField && { id: editingField.id }),
+      ...formData
+    }
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
+    const result = await apiCall(url, {
+      method,
+      body: JSON.stringify(body)
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert(editingField ? '필드가 수정되었습니다.' : '필드가 추가되었습니다.')
-        setIsModalOpen(false)
-        fetchFields()
-      } else {
-        alert(data.error || '저장에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('필드 저장 오류:', error)
-      alert('저장에 실패했습니다.')
+    if (result.success) {
+      alert(editingField ? '필드가 수정되었습니다.' : '필드가 추가되었습니다.')
+      setIsModalOpen(false)
+      fetchFields()
     }
   }
 

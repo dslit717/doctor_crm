@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import styles from './hr.module.scss'
+import { apiCall } from '@/lib/api'
 
 interface Employee {
   id: string
@@ -51,16 +52,12 @@ export default function HRPage() {
     setLoading(true)
     try {
       if (activeTab === 'employees') {
-        const res = await fetch('/api/employees')
-        const data = await res.json()
-        if (data.success) setEmployees(data.data || [])
+        const result = await apiCall('/api/employees')
+        if (result.success && result.data) setEmployees(result.data)
       } else {
-        const res = await fetch('/api/hr/leaves')
-        const data = await res.json()
-        if (data.success) setLeaves(data.data || [])
+        const result = await apiCall('/api/hr/leaves')
+        if (result.success && result.data) setLeaves(result.data)
       }
-    } catch (error) {
-      console.error('Fetch error:', error)
     } finally {
       setLoading(false)
     }
@@ -71,17 +68,12 @@ export default function HRPage() {
   }, [fetchData])
 
   const handleLeaveAction = async (id: string, status: 'approved' | 'rejected') => {
-    try {
-      const res = await fetch('/api/hr/leaves', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status }),
-      })
-      if (res.ok) {
-        fetchData()
-      }
-    } catch (error) {
-      console.error('Leave action error:', error)
+    const result = await apiCall('/api/hr/leaves', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, status }),
+    })
+    if (result.success) {
+      fetchData()
     }
   }
 

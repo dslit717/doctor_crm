@@ -6,6 +6,7 @@ import styles from './payments.module.scss'
 import Button from '@/components/ui/Button'
 import PaymentModal from './components/PaymentModal'
 import type { Payment } from './types'
+import { apiCall } from '@/lib/api'
 
 const statusLabels: Record<string, string> = {
   pending: '미수납',
@@ -61,22 +62,18 @@ export default function PaymentsPage() {
       const params = new URLSearchParams()
       if (statusFilter) params.append('status', statusFilter)
 
-      const res = await fetch(`/api/payments?${params}`)
-      const data = await res.json()
-      
-      if (data.success) {
-        setPayments(data.data || [])
+      const result = await apiCall<Payment[]>(`/api/payments?${params}`)
+      if (result.success && result.data) {
+        setPayments(result.data)
         // 통계 계산
-        const total = (data.data || []).reduce((sum: number, p: Payment) => sum + Number(p.total_amount), 0)
-        const paid = (data.data || []).reduce((sum: number, p: Payment) => sum + Number(p.paid_amount), 0)
+        const total = result.data.reduce((sum, p) => sum + Number(p.total_amount), 0)
+        const paid = result.data.reduce((sum, p) => sum + Number(p.paid_amount), 0)
         setStats({
           totalAmount: total,
           paidAmount: paid,
           unpaidAmount: total - paid
         })
       }
-    } catch (error) {
-      console.error('결제 목록 조회 오류:', error)
     } finally {
       setLoading(false)
     }
@@ -102,48 +99,30 @@ export default function PaymentsPage() {
     payment_methods: { method: string; amount: number }[]
     memo?: string
   }) => {
-    try {
-      const res = await fetch('/api/payments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+    const result = await apiCall('/api/payments', {
+      method: 'POST',
+      body: JSON.stringify(formData)
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        setShowModal(false)
-        fetchPayments()
-      } else {
-        alert(data.error || '저장에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('결제 저장 오류:', error)
-      alert('저장에 실패했습니다.')
+    if (result.success) {
+      setShowModal(false)
+      fetchPayments()
     }
   }
 
   // 추가 수납
   const handleAdditionalPayment = async (paymentId: string, additionalPayment: { method: string; amount: number }) => {
-    try {
-      const res = await fetch('/api/payments', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: paymentId,
-          additional_payment: additionalPayment
-        })
+    const result = await apiCall('/api/payments', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id: paymentId,
+        additional_payment: additionalPayment
       })
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        setShowModal(false)
-        fetchPayments()
-      } else {
-        alert(data.error || '추가 수납에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('추가 수납 오류:', error)
-      alert('추가 수납에 실패했습니다.')
+    if (result.success) {
+      setShowModal(false)
+      fetchPayments()
     }
   }
 
@@ -151,21 +130,13 @@ export default function PaymentsPage() {
   const handleCancelPayment = async (paymentId: string) => {
     if (!confirm('정말 이 결제를 취소하시겠습니까?')) return
 
-    try {
-      const res = await fetch(`/api/payments?id=${paymentId}`, {
-        method: 'DELETE'
-      })
+    const result = await apiCall(`/api/payments?id=${paymentId}`, {
+      method: 'DELETE'
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        setShowModal(false)
-        fetchPayments()
-      } else {
-        alert(data.error || '취소에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('결제 취소 오류:', error)
-      alert('취소에 실패했습니다.')
+    if (result.success) {
+      setShowModal(false)
+      fetchPayments()
     }
   }
 

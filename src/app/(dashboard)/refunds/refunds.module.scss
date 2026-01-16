@@ -1,20 +1,5 @@
-@use '../../../styles/abstracts/variables' as *;
-
-.container {
-  padding: 24px;
-  background: $white;
-  min-height: calc(100vh - 48px);
-}
-
-.header {
-  margin-bottom: 24px;
-
-  h1 {
-    font-size: 24px;
-    font-weight: 600;
-    color: $gray-900;
-  }
-}
+@import '../../../styles/abstracts/variables';
+@import '../../../styles/layouts/page-container';
 
 .filters {
   display: flex;

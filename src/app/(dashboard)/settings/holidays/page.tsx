@@ -5,6 +5,7 @@ import { Plus, Trash2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import styles from '../settings-layout.module.scss'
 import Button from '@/components/ui/Button'
+import { apiCall } from '@/lib/api'
 
 interface Holiday {
   id: string
@@ -33,16 +34,12 @@ export default function SettingsHolidaysPage() {
     setLoading(true)
     try {
       const year = new Date().getFullYear()
-      const holidaysRes = await fetch(`/api/settings/holidays?year=${year}`)
-      const holidaysData = await holidaysRes.json()
-      if (holidaysData.success) {
-        setHolidays(holidaysData.data || [])
+      const result = await apiCall(`/api/settings/holidays?year=${year}`)
+      if (result.success && result.data) {
+        setHolidays(result.data)
       } else {
         setHolidays([])
       }
-    } catch (error) {
-      console.error('휴무일 조회 오류:', error)
-      alert('휴무일을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -58,36 +55,21 @@ export default function SettingsHolidaysPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/settings/holidays', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newHoliday)
-      })
-      if (res.ok) {
-        setNewHoliday({ date: '', name: '' })
-        fetchHolidays()
-      } else {
-        alert('추가에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('Add holiday error:', error)
-      alert('추가에 실패했습니다.')
+    const result = await apiCall('/api/settings/holidays', {
+      method: 'POST',
+      body: JSON.stringify(newHoliday)
+    })
+    if (result.success) {
+      setNewHoliday({ date: '', name: '' })
+      fetchHolidays()
     }
   }
 
   const deleteHoliday = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return
-    try {
-      const res = await fetch(`/api/settings/holidays?id=${id}`, { method: 'DELETE' })
-      if (res.ok) {
-        fetchHolidays()
-      } else {
-        alert('삭제에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('Delete holiday error:', error)
-      alert('삭제에 실패했습니다.')
+    const result = await apiCall(`/api/settings/holidays?id=${id}`, { method: 'DELETE' })
+    if (result.success) {
+      fetchHolidays()
     }
   }
 

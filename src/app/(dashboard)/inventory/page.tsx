@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { AlertTriangle, Clock } from 'lucide-react'
 import styles from './inventory.module.scss'
 import Button from '@/components/ui/Button'
+import { apiCall } from '@/lib/api'
 
 interface InventoryItem {
   id: string
@@ -60,13 +61,8 @@ export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const fetchAlerts = useCallback(async () => {
-    try {
-      const res = await fetch('/api/inventory/alerts')
-      const data = await res.json()
-      if (data.success) setAlerts(data.data)
-    } catch (error) {
-      console.error('Alerts fetch error:', error)
-    }
+    const result = await apiCall('/api/inventory/alerts')
+    if (result.success && result.data) setAlerts(result.data)
   }, [])
 
   const fetchData = useCallback(async () => {
@@ -77,16 +73,12 @@ export default function InventoryPage() {
         if (showLowStock) params.append('low_stock', 'true')
         if (searchTerm) params.append('search', searchTerm)
 
-        const res = await fetch(`/api/inventory?${params}`)
-        const data = await res.json()
-        if (data.success) setItems(data.data || [])
+        const result = await apiCall(`/api/inventory?${params}`)
+        if (result.success && result.data) setItems(result.data)
       } else {
-        const res = await fetch('/api/inventory/transactions')
-        const data = await res.json()
-        if (data.success) setTransactions(data.data || [])
+        const result = await apiCall('/api/inventory/transactions')
+        if (result.success && result.data) setTransactions(result.data)
       }
-    } catch (error) {
-      console.error('Fetch error:', error)
     } finally {
       setLoading(false)
     }

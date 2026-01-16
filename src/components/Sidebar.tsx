@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Calendar, ChevronLeft, ChevronRight, LogOut, Users, Package, Cpu, Settings, UserRound, CreditCard, ShoppingBag, RotateCcw, Clock, MessageSquare, FileText } from 'lucide-react';
+import { Home, Calendar, ChevronLeft, ChevronRight, LogOut, Users, Package, Cpu, Settings, UserRound, CreditCard, ShoppingBag, RotateCcw, Clock, MessageSquare, FileText, Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './Sidebar.module.scss';
 
@@ -33,6 +33,7 @@ export default function Sidebar() {
     ],
     [
       { id: 'services', name: '서비스 관리', icon: ShoppingBag, path: '/services' },
+      { id: 'patient-services', name: '서비스 이행', icon: Activity, path: '/patient-services' },
     ],
     [
       { id: 'messaging', name: '메시지 관리', icon: MessageSquare, path: '/messaging' },

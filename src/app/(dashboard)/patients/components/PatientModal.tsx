@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ChartModal from '@/components/charts/ChartModal'
 import SatisfactionChartModal from '@/components/charts/SatisfactionChartModal'
 import Button from '@/components/ui/Button'
@@ -32,9 +32,38 @@ export default function PatientModal({
     email: patient?.email || '',
     referral_source: patient?.referral_source || '',
     status: patient?.status || 'active',
-    marketing_consent: false,
-    sms_consent: false
+    marketing_consent: patient?.marketing_consent || false,
+    sms_consent: patient?.sms_consent || false
   })
+
+  // patient가 변경될 때 formData 업데이트
+  useEffect(() => {
+    if (patient) {
+      setFormData({
+        name: patient.name || '',
+        phone: patient.phone || '',
+        birth_date: patient.birth_date || '',
+        gender: patient.gender || 'female',
+        email: patient.email || '',
+        referral_source: patient.referral_source || '',
+        status: patient.status || 'active',
+        marketing_consent: patient.marketing_consent || false,
+        sms_consent: patient.sms_consent || false
+      })
+    } else {
+      setFormData({
+        name: '',
+        phone: '',
+        birth_date: '',
+        gender: 'female',
+        email: '',
+        referral_source: '',
+        status: 'active',
+        marketing_consent: false,
+        sms_consent: false
+      })
+    }
+  }, [patient])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,6 +83,7 @@ export default function PatientModal({
         onClose={onClose}
         title={isEditMode ? '환자 정보' : '신규 환자 등록'}
         size="md"
+        closeOnOverlayClick={false}
         footer={
           <>
             {isEditMode && (

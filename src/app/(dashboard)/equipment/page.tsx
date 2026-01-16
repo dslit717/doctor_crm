@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import styles from './equipment.module.scss'
+import { apiCall } from '@/lib/api'
 
 interface Equipment {
   id: string
@@ -58,16 +59,12 @@ export default function EquipmentPage() {
         const params = new URLSearchParams()
         if (selectedCategory) params.append('category', selectedCategory)
 
-        const res = await fetch(`/api/equipment?${params}`)
-        const data = await res.json()
-        if (data.success) setEquipments(data.data || [])
+        const result = await apiCall(`/api/equipment?${params}`)
+        if (result.success && result.data) setEquipments(result.data)
       } else {
-        const res = await fetch('/api/equipment/maintenance')
-        const data = await res.json()
-        if (data.success) setMaintenances(data.data || [])
+        const result = await apiCall('/api/equipment/maintenance')
+        if (result.success && result.data) setMaintenances(result.data)
       }
-    } catch (error) {
-      console.error('Fetch error:', error)
     } finally {
       setLoading(false)
     }

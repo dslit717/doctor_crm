@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
 import styles from '../payments.module.scss'
 import type { Patient, Payment } from '../types'
+import { apiCall } from '@/lib/api'
 
 const methodLabels: Record<string, string> = {
   cash: '현금',
@@ -94,10 +95,9 @@ export default function PaymentModal({
     if (isViewMode) return
     if (patientSearch.length >= 2) {
       const timer = setTimeout(async () => {
-        const res = await fetch(`/api/patients?search=${encodeURIComponent(patientSearch)}&limit=5`)
-        const data = await res.json()
-        if (data.success) {
-          setPatientResults(data.data || [])
+        const result = await apiCall<Patient[]>(`/api/patients?search=${encodeURIComponent(patientSearch)}&limit=5`)
+        if (result.success && result.data) {
+          setPatientResults(result.data)
         }
       }, 300)
       return () => clearTimeout(timer)

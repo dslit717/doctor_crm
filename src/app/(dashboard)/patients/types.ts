@@ -12,6 +12,8 @@ export interface Patient {
   last_visit_date?: string
   visit_count: number
   membership_grade?: string
+  marketing_consent?: boolean
+  sms_consent?: boolean
   created_at: string
 }
 

@@ -13,18 +13,19 @@ async function sendSolapi(to: string, content: string, type: 'SMS' | 'LMS' | 'MM
     throw new Error('Solapi 설정이 없습니다.')
   }
 
-  const timestamp = Date.now().toString()
   const crypto = await import('crypto')
+  const date = new Date().toISOString()
+  const salt = crypto.randomUUID()
   const signature = crypto
     .createHmac('sha256', apiSecret)
-    .update(timestamp + apiKey)
+    .update(date + salt)
     .digest('hex')
 
   const response = await fetch('https://api.solapi.com/messages/v4/send', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `HMAC-SHA256 apiKey=${apiKey}, date=${timestamp}, salt=${timestamp}, signature=${signature}`
+      'Authorization': `HMAC-SHA256 apiKey=${apiKey}, date=${date}, salt=${salt}, signature=${signature}`
     },
     body: JSON.stringify({
       message: {

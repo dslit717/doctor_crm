@@ -6,6 +6,7 @@ import styles from './messaging.module.scss'
 import Button from '@/components/ui/Button'
 import MessageTemplateModal from './components/MessageTemplateModal'
 import type { MessageTemplate, MessageTemplateFormData, NotificationLog } from './types'
+import { apiCall } from '@/lib/api'
 
 const categoryLabels: Record<string, string> = {
   reservation: '예약',
@@ -66,14 +67,10 @@ export default function MessagingPage() {
   const fetchTemplates = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/messaging/templates?include_inactive=true')
-      const data = await res.json()
-      if (data.success) {
-        setTemplates(data.data || [])
+      const result = await apiCall<MessageTemplate[]>('/api/messaging/templates?include_inactive=true')
+      if (result.success && result.data) {
+        setTemplates(result.data)
       }
-    } catch (error) {
-      console.error('템플릿 조회 오류:', error)
-      alert('템플릿 목록을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -90,15 +87,11 @@ export default function MessagingPage() {
       if (historyFilters.start_date) params.append('start_date', historyFilters.start_date)
       if (historyFilters.end_date) params.append('end_date', historyFilters.end_date)
 
-      const res = await fetch(`/api/messaging/history?${params}`)
-      const data = await res.json()
-      if (data.success) {
-        setHistory(data.data || [])
-        setHistoryPagination(data.pagination)
+      const result = await apiCall<{ data: NotificationLog[]; pagination: typeof historyPagination }>(`/api/messaging/history?${params}`)
+      if (result.success && result.data) {
+        setHistory(result.data.data || [])
+        setHistoryPagination(result.data.pagination)
       }
-    } catch (error) {
-      console.error('발송 이력 조회 오류:', error)
-      alert('발송 이력을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -106,31 +99,22 @@ export default function MessagingPage() {
 
   const handleSubmitTemplate = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const url = '/api/messaging/templates'
-      const method = editingTemplate ? 'PUT' : 'POST'
-      const body = editingTemplate 
-        ? { ...formData, id: editingTemplate.id }
-        : formData
+    const url = '/api/messaging/templates'
+    const method = editingTemplate ? 'PUT' : 'POST'
+    const body = editingTemplate 
+      ? { ...formData, id: editingTemplate.id }
+      : formData
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
+    const result = await apiCall(url, {
+      method,
+      body: JSON.stringify(body)
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert(editingTemplate ? '템플릿이 수정되었습니다.' : '템플릿이 등록되었습니다.')
-        setShowTemplateModal(false)
-        resetForm()
-        fetchTemplates()
-      } else {
-        alert(data.error || '처리에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('템플릿 저장 오류:', error)
-      alert('템플릿 저장에 실패했습니다.')
+    if (result.success) {
+      alert(editingTemplate ? '템플릿이 수정되었습니다.' : '템플릿이 등록되었습니다.')
+      setShowTemplateModal(false)
+      resetForm()
+      fetchTemplates()
     }
   }
 
@@ -150,18 +134,10 @@ export default function MessagingPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('템플릿을 비활성화하시겠습니까?')) return
 
-    try {
-      const res = await fetch(`/api/messaging/templates?id=${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.success) {
-        alert('템플릿이 비활성화되었습니다.')
-        fetchTemplates()
-      } else {
-        alert(data.error || '삭제에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('템플릿 삭제 오류:', error)
-      alert('템플릿 삭제에 실패했습니다.')
+    const result = await apiCall(`/api/messaging/templates?id=${id}`, { method: 'DELETE' })
+    if (result.success) {
+      alert('템플릿이 비활성화되었습니다.')
+      fetchTemplates()
     }
   }
 

@@ -7,6 +7,7 @@ import ChartModal from '@/components/charts/ChartModal';
 import SatisfactionChartModal from '@/components/charts/SatisfactionChartModal';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
+import { apiCall } from '@/lib/api';
 
 interface Patient {
   id: string;
@@ -84,15 +85,10 @@ export function ReservationModal({
       setSearchResults([]);
       return;
     }
-    try {
-      const res = await fetch(`/api/patients?search=${encodeURIComponent(term)}&limit=5`);
-      const data = await res.json();
-      if (data.success) {
-        setSearchResults(data.data || []);
-      } else {
-        setSearchResults([]);
-      }
-    } catch (error) {
+    const result = await apiCall<Patient[]>(`/api/patients?search=${encodeURIComponent(term)}&limit=5`);
+    if (result.success && result.data) {
+      setSearchResults(result.data);
+    } else {
       setSearchResults([]);
     }
   }, []);

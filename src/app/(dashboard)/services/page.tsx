@@ -6,6 +6,7 @@ import styles from './services.module.scss'
 import Button from '@/components/ui/Button'
 import ServiceModal from './components/ServiceModal'
 import type { Service, ServiceFormData } from './types'
+import { apiCall } from '@/lib/api'
 
 const categoryLabels: Record<string, string> = {
   treatment: '시술',
@@ -49,14 +50,10 @@ export default function ServicesPage() {
       if (selectedCategory) params.append('category', selectedCategory)
       if (showActiveOnly) params.append('is_active', 'true')
 
-      const res = await fetch(`/api/services?${params}`)
-      const data = await res.json()
-      if (data.success) {
-        setServices(data.data || [])
+      const result = await apiCall<Service[]>(`/api/services?${params}`)
+      if (result.success && result.data) {
+        setServices(result.data)
       }
-    } catch (error) {
-      console.error('서비스 조회 오류:', error)
-      alert('서비스 목록을 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -68,31 +65,22 @@ export default function ServicesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const url = '/api/services'
-      const method = editingService ? 'PUT' : 'POST'
-      const body = editingService 
-        ? { ...formData, id: editingService.id }
-        : formData
+    const url = '/api/services'
+    const method = editingService ? 'PUT' : 'POST'
+    const body = editingService 
+      ? { ...formData, id: editingService.id }
+      : formData
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
+    const result = await apiCall(url, {
+      method,
+      body: JSON.stringify(body)
+    })
 
-      const data = await res.json()
-      if (data.success) {
-        alert(editingService ? '서비스가 수정되었습니다.' : '서비스가 등록되었습니다.')
-        setShowModal(false)
-        resetForm()
-        fetchServices()
-      } else {
-        alert(data.error || '처리에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('서비스 저장 오류:', error)
-      alert('서비스 저장에 실패했습니다.')
+    if (result.success) {
+      alert(editingService ? '서비스가 수정되었습니다.' : '서비스가 등록되었습니다.')
+      setShowModal(false)
+      resetForm()
+      fetchServices()
     }
   }
 
@@ -116,18 +104,10 @@ export default function ServicesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('서비스를 비활성화하시겠습니까?')) return
 
-    try {
-      const res = await fetch(`/api/services?id=${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.success) {
-        alert('서비스가 비활성화되었습니다.')
-        fetchServices()
-      } else {
-        alert(data.error || '삭제에 실패했습니다.')
-      }
-    } catch (error) {
-      console.error('서비스 삭제 오류:', error)
-      alert('서비스 삭제에 실패했습니다.')
+    const result = await apiCall(`/api/services?id=${id}`, { method: 'DELETE' })
+    if (result.success) {
+      alert('서비스가 비활성화되었습니다.')
+      fetchServices()
     }
   }
 

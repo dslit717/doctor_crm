@@ -1,0 +1,23 @@
+// 공통 페이지 컨테이너
+// 변수는 각 파일에서 import한 것을 사용
+.container {
+  padding: 24px;
+  background: $white;
+  min-height: calc(100vh - 48px);
+}
+
+// 공통 페이지 헤더
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0;
+  }
+}
+

@@ -1,27 +1,6 @@
-@use '../../../styles/abstracts/variables' as *;
+@import '../../../styles/abstracts/variables';
+@import '../../../styles/layouts/page-container';
 
-.container {
-  padding: 24px;
-  background: #ffffff;
-  min-height: calc(100vh - 48px);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-
-  h1 {
-    font-size: 24px;
-    font-weight: 600;
-    color: $gray-900;
-  }
-}
-
-// 버튼은 공통 Button 컴포넌트를 사용
-
-// 통계 카드
 .statsRow {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
